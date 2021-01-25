@@ -86,14 +86,16 @@ public class Command_Ranking implements Command {
                 sb.append("**" + i + ".** > " + bungieUser.getUser().getName() + ": **" + this.formatInteger((int) sortedHashMap.get(bungieUserObject)) + "**" + "\n");
             }
 
-            if(i > 5 && end) {
-                break;
+            String lastLine = "";
+            if(bungieUser.equals(targetUser)) {
+                lastLine = "\n" + "*...*" + "\n\n";
+                lastLine += "**" + i + ".** > " + bungieUser.getUser().getName() + ": **" + this.formatInteger((int) sortedHashMap.get(bungieUserObject)) + "**" + "\n";
+                end = true;
             }
 
-            if(bungieUser.equals(targetUser)) {
-                sb.append("\n" + "*...*" + "\n\n");
-                sb.append("**" + i + ".** > " + bungieUser.getUser().getName() + ": **" + this.formatInteger((int) sortedHashMap.get(bungieUserObject)) + "**" + "\n");
-                end = true;
+            if(i > 5 && end) {
+                sb.append(lastLine);
+                break;
             }
 
             i++;
@@ -142,13 +144,15 @@ public class Command_Ranking implements Command {
                 sb.append("**" + i + ".** > " + bungieUser.getUser().getName() + ": **" + this.formatInteger((int) sortedHashMap.get(bungieUserObject)) + "** (" + resets + " Reset" + (resets == 1 ? "" : "s") + ")" + "\n");
             }
 
+            String lastLine = "";
             if(bungieUser.equals(targetUser)) {
-                sb.append("\n" + "*...*" + "\n\n");
-                sb.append("**" + i + ".** > " + bungieUser.getUser().getName() + ": **" + this.formatInteger((int) sortedHashMap.get(bungieUserObject)) + "** (" + resets + " Reset" + (resets == 1 ? "" : "s") + ")" + "\n");
+                lastLine = "\n" + "*...*" + "\n\n";
+                lastLine += "**" + i + ".** > " + bungieUser.getUser().getName() + ": **" + this.formatInteger((int) sortedHashMap.get(bungieUserObject)) + "** (" + resets + " Reset" + (resets == 1 ? "" : "s") + ")" + "\n";
                 end = true;
             }
 
             if(i > 5 && end) {
+                sb.append(lastLine);
                 break;
             }
 
@@ -194,13 +198,15 @@ public class Command_Ranking implements Command {
                 sb.append("**" + i + ".** > " + bungieUser.getUser().getName() + ": **" + TimeUtil.timeToString((long)sortedHashMap.get(bungieUserObject) * 1000, true) + "**" + "\n");
             }
 
+            String lastLine = "";
             if(bungieUser.equals(targetUser)) {
-                sb.append("\n" + "*...*" + "\n\n");
-                sb.append("**" + i + ".** > " + bungieUser.getUser().getName() + ": **" + TimeUtil.timeToString((long)sortedHashMap.get(bungieUserObject) * 1000, true) + "**" + "\n");
+                lastLine = "\n" + "*...*" + "\n\n";
+                lastLine += "**" + i + ".** > " + bungieUser.getUser().getName() + ": **" + TimeUtil.timeToString((long)sortedHashMap.get(bungieUserObject) * 1000, true) + "**" + "\n";
                 end = true;
             }
 
             if(i > 5 && end) {
+                sb.append(lastLine);
                 break;
             }
 
