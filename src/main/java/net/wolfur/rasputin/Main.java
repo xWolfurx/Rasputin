@@ -12,6 +12,7 @@ import net.wolfur.rasputin.command.clan.Command_Clan;
 import net.wolfur.rasputin.command.fun.Command_Huen;
 import net.wolfur.rasputin.command.moderation.Command_Ping;
 import net.wolfur.rasputin.command.notify.Command_Notify;
+import net.wolfur.rasputin.command.permission.Command_Permission;
 import net.wolfur.rasputin.command.punish.*;
 import net.wolfur.rasputin.command.raid.Command_Raid;
 import net.wolfur.rasputin.command.registration.Command_Register;
@@ -199,6 +200,9 @@ public class Main {
 
     private static int loadCommands() {
         //BUNGIE COMMANDS
+
+        //ADMINISTRATION
+        CommandHandler.commands.put("permission", new Command_Permission());
 
         //MODERATION
         CommandHandler.commands.put("ping", new Command_Ping());

@@ -28,6 +28,7 @@ public class PermissionFile extends FileBase {
             cfg.addDefault("command." + commandName + ".needPermission", Boolean.valueOf(true));
             cfg.addDefault("command." + commandName + ".whitelistedRoles", Arrays.asList(new Long[] { -1L }));
             cfg.addDefault("command." + commandName + ".whitelistedUsers", Arrays.asList(new Long[] { -1L }));
+            cfg.addDefault("command." + commandName + ".blacklistedUsers", Arrays.asList(new Long[] { -1L }));
         }
 
         cfg.options().copyDefaults(true);
@@ -41,8 +42,9 @@ public class PermissionFile extends FileBase {
             boolean needPermission = cfg.getBoolean("command." + commandName + ".needPermission");
             List<Long> whitelistedRoles = cfg.getLongList("command." + commandName + ".whitelistedRoles");
             List<Long> whitelistedUsers = cfg.getLongList("command." + commandName + ".whitelistedUsers");
+            List<Long> blacklistedUsers = cfg.getLongList("command." + commandName + ".blacklistedUsers");
 
-            this.commandPermissions.add(new CommandPermission(CommandHandler.commands.get(commandName), needPermission, whitelistedRoles, whitelistedUsers));
+            this.commandPermissions.add(new CommandPermission(CommandHandler.commands.get(commandName), commandName, needPermission, whitelistedRoles, whitelistedUsers, blacklistedUsers));
         }
     }
 
@@ -53,5 +55,16 @@ public class PermissionFile extends FileBase {
             }
         }
         return null;
+    }
+
+    public void saveCommand(CommandPermission commandPermission) {
+        FileConfiguration cfg = getConfig();
+
+        cfg.set("command." + commandPermission.getCommandName() + ".needPermission", commandPermission.needPermission());
+        cfg.set("command." + commandPermission.getCommandName() + ".whitelistedRoles", commandPermission.getWhitelistedRoles());
+        cfg.set("command." + commandPermission.getCommandName() + ".whitelistedUsers", commandPermission.getWhitelistedUsers());
+        cfg.set("command." + commandPermission.getCommandName() + ".blacklistedUsers", commandPermission.getBlacklistedUsers());
+
+        saveConfig();
     }
 }
