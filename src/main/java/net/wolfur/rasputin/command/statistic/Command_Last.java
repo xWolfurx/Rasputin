@@ -33,89 +33,87 @@ public class Command_Last implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if(Main.getFileManager().getChannelFile().isCommandChannel(event.getTextChannel().getIdLong())) {
-            BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
-            if(bungieUser.isRegistered()) {
-                if(args.length == 1) {
-                    if (args[0].equalsIgnoreCase("raid")) {
-                        bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.RAID, 250, true);
-                        List<JsonObject> raidActivities = bungieUser.getActivityHistory(DestinyActivityModeType.RAID);
-                        event.getTextChannel().sendMessage(this.createRaidEmbedBuilder(bungieUser, raidActivities).build()).complete();
-                    } else if (args[0].equalsIgnoreCase("patrol")) {
-                        bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.PATROL, 250, true);
-                        List<JsonObject> patrolActivities = bungieUser.getActivityHistory(DestinyActivityModeType.PATROL);
-                        event.getTextChannel().sendMessage(this.createPatrolEmbedBuilder(bungieUser, patrolActivities).build()).complete();
-                    } else if (args[0].equalsIgnoreCase("nightfall") || args[0].equalsIgnoreCase("nf")) {
-                        bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.SCORED_NIGHTFALL, 250, true);
-                        List<JsonObject> nightfallActivities = bungieUser.getActivityHistory(DestinyActivityModeType.SCORED_NIGHTFALL);
-                        event.getTextChannel().sendMessage(this.createNightfallEmbedBuilder(bungieUser, nightfallActivities).build()).complete();
-                    } else if (args[0].equalsIgnoreCase("dungeon")) {
-                        bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.DUNGEON, 250, true);
-                        List<JsonObject> dungeonActivities = bungieUser.getActivityHistory(DestinyActivityModeType.DUNGEON);
-                        event.getTextChannel().sendMessage(this.createDungeonEmbedBuilder(bungieUser, dungeonActivities).build()).complete();
-                    } else if (args[0].equalsIgnoreCase("gambit")) {
-                        bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.GAMBIT, 250, true);
-                        bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.GAMBIT_PRIME, 250, true);
-                        List<JsonObject> gambitActivities = bungieUser.getActivityHistory(DestinyActivityModeType.GAMBIT);
-                        gambitActivities.addAll(bungieUser.getActivityHistory(DestinyActivityModeType.GAMBIT_PRIME));
-                        event.getTextChannel().sendMessage(this.createGambitEmbedBuilder(bungieUser, gambitActivities).build()).complete();
-                    } else {
-                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Diese Aktivität existiert nicht. \n\nBitte verwende **.help last** um dir die möglichen Aktivitäten aufzulisten.").build()).queue(message -> {
-                            message.delete().queueAfter(15, TimeUnit.SECONDS);
-                        });
-                    }
-                } else if(args.length == 2) {
-                    User targetUser = Main.getJDA().retrieveUserById(args[1].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", "")).complete();
-                    if (targetUser != null) {
-                        BungieUser targetBungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(targetUser);
-                        if (targetBungieUser.isRegistered()) {
-                            if (args[0].equalsIgnoreCase("raid")) {
-                                targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.RAID, 250, true);
-                                List<JsonObject> raidActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.RAID);
-                                event.getTextChannel().sendMessage(this.createRaidEmbedBuilder(targetBungieUser, raidActivities).build()).complete();
-                            } else if (args[0].equalsIgnoreCase("patrol")) {
-                                targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.PATROL, 250, true);
-                                List<JsonObject> patrolActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.PATROL);
-                                event.getTextChannel().sendMessage(this.createPatrolEmbedBuilder(targetBungieUser, patrolActivities).build()).complete();
-                            } else if (args[0].equalsIgnoreCase("nightfall") || args[0].equalsIgnoreCase("nf")) {
-                                targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.SCORED_NIGHTFALL, 250, true);
-                                List<JsonObject> nightfallActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.SCORED_NIGHTFALL);
-                                event.getTextChannel().sendMessage(this.createNightfallEmbedBuilder(targetBungieUser, nightfallActivities).build()).complete();
-                            } else if (args[0].equalsIgnoreCase("dungeon")) {
-                                targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.DUNGEON, 250, true);
-                                List<JsonObject> dungeonActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.DUNGEON);
-                                event.getTextChannel().sendMessage(this.createDungeonEmbedBuilder(targetBungieUser, dungeonActivities).build()).complete();
-                            } else if (args[0].equalsIgnoreCase("gambit")) {
-                                targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.GAMBIT, 250, true);
-                                targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.GAMBIT_PRIME, 250, true);
-                                List<JsonObject> gambitActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.GAMBIT);
-                                gambitActivities.addAll(targetBungieUser.getActivityHistory(DestinyActivityModeType.GAMBIT_PRIME));
-                                event.getTextChannel().sendMessage(this.createGambitEmbedBuilder(targetBungieUser, gambitActivities).build()).complete();
-                            } else {
-                                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Diese Aktivität existiert nicht. \n\nBitte verwende **.help last** um dir die möglichen Aktivitäten aufzulisten.").build()).queue(message -> {
-                                    message.delete().queueAfter(15, TimeUnit.SECONDS);
-                                });
-                            }
+        BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
+        if(bungieUser.isRegistered()) {
+            if(args.length == 1) {
+                if (args[0].equalsIgnoreCase("raid")) {
+                    bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.RAID, 250, true);
+                    List<JsonObject> raidActivities = bungieUser.getActivityHistory(DestinyActivityModeType.RAID);
+                    event.getTextChannel().sendMessage(this.createRaidEmbedBuilder(bungieUser, raidActivities).build()).complete();
+                } else if (args[0].equalsIgnoreCase("patrol")) {
+                    bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.PATROL, 250, true);
+                    List<JsonObject> patrolActivities = bungieUser.getActivityHistory(DestinyActivityModeType.PATROL);
+                    event.getTextChannel().sendMessage(this.createPatrolEmbedBuilder(bungieUser, patrolActivities).build()).complete();
+                } else if (args[0].equalsIgnoreCase("nightfall") || args[0].equalsIgnoreCase("nf")) {
+                    bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.SCORED_NIGHTFALL, 250, true);
+                    List<JsonObject> nightfallActivities = bungieUser.getActivityHistory(DestinyActivityModeType.SCORED_NIGHTFALL);
+                    event.getTextChannel().sendMessage(this.createNightfallEmbedBuilder(bungieUser, nightfallActivities).build()).complete();
+                } else if (args[0].equalsIgnoreCase("dungeon")) {
+                    bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.DUNGEON, 250, true);
+                    List<JsonObject> dungeonActivities = bungieUser.getActivityHistory(DestinyActivityModeType.DUNGEON);
+                    event.getTextChannel().sendMessage(this.createDungeonEmbedBuilder(bungieUser, dungeonActivities).build()).complete();
+                } else if (args[0].equalsIgnoreCase("gambit")) {
+                    bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.GAMBIT, 250, true);
+                    bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.GAMBIT_PRIME, 250, true);
+                    List<JsonObject> gambitActivities = bungieUser.getActivityHistory(DestinyActivityModeType.GAMBIT);
+                    gambitActivities.addAll(bungieUser.getActivityHistory(DestinyActivityModeType.GAMBIT_PRIME));
+                    event.getTextChannel().sendMessage(this.createGambitEmbedBuilder(bungieUser, gambitActivities).build()).complete();
+                } else {
+                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Diese Aktivität existiert nicht. \n\nBitte verwende **.help last** um dir die möglichen Aktivitäten aufzulisten.").build()).queue(message -> {
+                        message.delete().queueAfter(15, TimeUnit.SECONDS);
+                    });
+                }
+            } else if(args.length == 2) {
+                User targetUser = Main.getJDA().retrieveUserById(args[1].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", "")).complete();
+                if (targetUser != null) {
+                    BungieUser targetBungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(targetUser);
+                    if (targetBungieUser.isRegistered()) {
+                        if (args[0].equalsIgnoreCase("raid")) {
+                            targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.RAID, 250, true);
+                            List<JsonObject> raidActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.RAID);
+                            event.getTextChannel().sendMessage(this.createRaidEmbedBuilder(targetBungieUser, raidActivities).build()).complete();
+                        } else if (args[0].equalsIgnoreCase("patrol")) {
+                            targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.PATROL, 250, true);
+                            List<JsonObject> patrolActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.PATROL);
+                            event.getTextChannel().sendMessage(this.createPatrolEmbedBuilder(targetBungieUser, patrolActivities).build()).complete();
+                        } else if (args[0].equalsIgnoreCase("nightfall") || args[0].equalsIgnoreCase("nf")) {
+                            targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.SCORED_NIGHTFALL, 250, true);
+                            List<JsonObject> nightfallActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.SCORED_NIGHTFALL);
+                            event.getTextChannel().sendMessage(this.createNightfallEmbedBuilder(targetBungieUser, nightfallActivities).build()).complete();
+                        } else if (args[0].equalsIgnoreCase("dungeon")) {
+                            targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.DUNGEON, 250, true);
+                            List<JsonObject> dungeonActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.DUNGEON);
+                            event.getTextChannel().sendMessage(this.createDungeonEmbedBuilder(targetBungieUser, dungeonActivities).build()).complete();
+                        } else if (args[0].equalsIgnoreCase("gambit")) {
+                            targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.GAMBIT, 250, true);
+                            targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.GAMBIT_PRIME, 250, true);
+                            List<JsonObject> gambitActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.GAMBIT);
+                            gambitActivities.addAll(targetBungieUser.getActivityHistory(DestinyActivityModeType.GAMBIT_PRIME));
+                            event.getTextChannel().sendMessage(this.createGambitEmbedBuilder(targetBungieUser, gambitActivities).build()).complete();
                         } else {
-                            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser Spieler ist noch nicht registriert.").build()).queue(message -> {
+                            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Diese Aktivität existiert nicht. \n\nBitte verwende **.help last** um dir die möglichen Aktivitäten aufzulisten.").build()).queue(message -> {
                                 message.delete().queueAfter(15, TimeUnit.SECONDS);
                             });
                         }
                     } else {
-                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der Spieler existiert nicht.").build()).queue(message -> {
+                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser Spieler ist noch nicht registriert.").build()).queue(message -> {
                             message.delete().queueAfter(15, TimeUnit.SECONDS);
                         });
                     }
                 } else {
-                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Last <Activity> [@Player]").build()).queue(message -> {
+                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der Spieler existiert nicht.").build()).queue(message -> {
                         message.delete().queueAfter(15, TimeUnit.SECONDS);
                     });
                 }
             } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Last <Activity> [@Player]").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);
                 });
             }
+        } else {
+            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                message.delete().queueAfter(15, TimeUnit.SECONDS);
+            });
         }
     }
 

@@ -26,41 +26,39 @@ public class Command_Loadout implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if(Main.getFileManager().getChannelFile().isCommandChannel(event.getTextChannel().getIdLong())) {
-            BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
-            if (bungieUser.isRegistered()) {
-                if(args.length == 0) {
-                    bungieUser.requestCharacter(ComponentType.CHARACTER_EQUIPMENT);
-                    Map<DestinyCharacter, JsonObject> characterInventories = bungieUser.getCharacterData(ComponentType.CHARACTER_EQUIPMENT);
-                    event.getTextChannel().sendMessage(this.createLoadoutEmbedBuilder(bungieUser, characterInventories).build()).complete();
-                } else if(args.length == 1) {
-                    User targetUser = Main.getJDA().retrieveUserById(args[0].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", "")).complete();
-                    if (targetUser != null) {
-                        BungieUser targetBungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(targetUser);
-                        if (targetBungieUser.isRegistered()) {
-                            targetBungieUser.requestCharacter(ComponentType.CHARACTER_EQUIPMENT);
-                            Map<DestinyCharacter, JsonObject> characterInventories = targetBungieUser.getCharacterData(ComponentType.CHARACTER_EQUIPMENT);
-                            event.getTextChannel().sendMessage(this.createLoadoutEmbedBuilder(targetBungieUser, characterInventories).build()).complete();
-                        } else {
-                            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser Spieler ist noch nicht registriert.").build()).queue(message -> {
-                                message.delete().queueAfter(15, TimeUnit.SECONDS);
-                            });
-                        }
+        BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
+        if (bungieUser.isRegistered()) {
+            if(args.length == 0) {
+                bungieUser.requestCharacter(ComponentType.CHARACTER_EQUIPMENT);
+                Map<DestinyCharacter, JsonObject> characterInventories = bungieUser.getCharacterData(ComponentType.CHARACTER_EQUIPMENT);
+                event.getTextChannel().sendMessage(this.createLoadoutEmbedBuilder(bungieUser, characterInventories).build()).complete();
+            } else if(args.length == 1) {
+                User targetUser = Main.getJDA().retrieveUserById(args[0].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", "")).complete();
+                if (targetUser != null) {
+                    BungieUser targetBungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(targetUser);
+                    if (targetBungieUser.isRegistered()) {
+                        targetBungieUser.requestCharacter(ComponentType.CHARACTER_EQUIPMENT);
+                        Map<DestinyCharacter, JsonObject> characterInventories = targetBungieUser.getCharacterData(ComponentType.CHARACTER_EQUIPMENT);
+                        event.getTextChannel().sendMessage(this.createLoadoutEmbedBuilder(targetBungieUser, characterInventories).build()).complete();
                     } else {
-                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der Spieler existiert nicht.").build()).queue(message -> {
+                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser Spieler ist noch nicht registriert.").build()).queue(message -> {
                             message.delete().queueAfter(15, TimeUnit.SECONDS);
                         });
                     }
                 } else {
-                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Loadout [@Player]").build()).queue(message -> {
+                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der Spieler existiert nicht.").build()).queue(message -> {
                         message.delete().queueAfter(15, TimeUnit.SECONDS);
                     });
                 }
             } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Loadout [@Player]").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);
                 });
             }
+        } else {
+            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                message.delete().queueAfter(15, TimeUnit.SECONDS);
+            });
         }
     }
 

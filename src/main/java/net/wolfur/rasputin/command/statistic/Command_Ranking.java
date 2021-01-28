@@ -25,37 +25,41 @@ public class Command_Ranking implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if(Main.getFileManager().getChannelFile().isCommandChannel(event.getTextChannel().getIdLong())) {
-            BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
-            if (bungieUser.isRegistered()) {
-                if(args.length == 1) {
-                    if(args[0].equalsIgnoreCase("triumph")) {
-                        event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, "Active Triumph Score", "3981543480").build()).complete();
-                    } else if(args[0].equalsIgnoreCase("totalTriumph")) {
-                        event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, "Total Triumph Score", "3329916678").build()).complete();
-                    } else if(args[0].equalsIgnoreCase("glory")) {
-                        event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, "Glory Points", "268448617").build()).complete();
-                    } else if(args[0].equalsIgnoreCase("valor")) {
-                        event.getTextChannel().sendMessage(this.createCrucibleEmbedBuilder(bungieUser, "Valor Points", "2872213304", "3626149776").build()).complete();
-                    } else if(args[0].equalsIgnoreCase("infamy")) {
-                        event.getTextChannel().sendMessage(this.createCrucibleEmbedBuilder(bungieUser, "Infamy Points", "250859887", "1963785799").build()).complete();
-                    } else if(args[0].equalsIgnoreCase("tower")) {
-                        event.getTextChannel().sendMessage(this.createTowerEmbedBuilder(bungieUser).build()).complete();
-                    } else {
-                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser Typ existiert nicht. \n\nBitte verwende **.help ranking** um dir die möglichen Typen aufzulisten.").build()).queue(message -> {
-                            message.delete().queueAfter(15, TimeUnit.SECONDS);
-                        });
-                    }
+        BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
+        if(bungieUser.isRegistered()) {
+            if(args.length == 1) {
+                if(args[0].equalsIgnoreCase("triumph")) {
+                    bungieUser.requestProfile(ComponentType.METRICS);
+                    event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, "Active Triumph Score", "3981543480").build()).complete();
+                } else if(args[0].equalsIgnoreCase("totalTriumph")) {
+                    bungieUser.requestProfile(ComponentType.METRICS);
+                    event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, "Total Triumph Score", "3329916678").build()).complete();
+                } else if(args[0].equalsIgnoreCase("glory")) {
+                    bungieUser.requestProfile(ComponentType.METRICS);
+                    event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, "Glory Points", "268448617").build()).complete();
+                } else if(args[0].equalsIgnoreCase("valor")) {
+                    bungieUser.requestProfile(ComponentType.METRICS);
+                    event.getTextChannel().sendMessage(this.createCrucibleEmbedBuilder(bungieUser, "Valor Points", "2872213304", "3626149776").build()).complete();
+                } else if(args[0].equalsIgnoreCase("infamy")) {
+                    bungieUser.requestProfile(ComponentType.METRICS);
+                    event.getTextChannel().sendMessage(this.createCrucibleEmbedBuilder(bungieUser, "Infamy Points", "250859887", "1963785799").build()).complete();
+                } else if(args[0].equalsIgnoreCase("tower")) {
+                    bungieUser.requestProfile(ComponentType.METRICS);
+                    event.getTextChannel().sendMessage(this.createTowerEmbedBuilder(bungieUser).build()).complete();
                 } else {
-                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Ranking <Type>").build()).queue(message -> {
+                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser Typ existiert nicht. \n\nBitte verwende **.help ranking** um dir die möglichen Typen aufzulisten.").build()).queue(message -> {
                         message.delete().queueAfter(15, TimeUnit.SECONDS);
                     });
                 }
             } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Ranking <Type>").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);
                 });
             }
+        } else {
+            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                message.delete().queueAfter(15, TimeUnit.SECONDS);
+            });
         }
     }
 

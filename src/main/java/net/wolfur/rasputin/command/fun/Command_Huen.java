@@ -19,21 +19,19 @@ public class Command_Huen implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if(Main.getFileManager().getChannelFile().isCommandChannel(event.getTextChannel().getIdLong())) {
-            if(args.length >= 0) {
-                BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
-                if (bungieUser.isRegistered()) {
-                    event.getTextChannel().sendMessage(event.getAuthor().getAsMention() + " huen").complete();
-                } else {
-                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
-                        message.delete().queueAfter(15, TimeUnit.SECONDS);
-                    });
-                }
+        if(args.length >= 0) {
+            BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
+            if (bungieUser.isRegistered()) {
+                event.getTextChannel().sendMessage(event.getAuthor().getAsMention() + " huen").complete();
             } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Huen").build()).queue(message -> {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);
                 });
             }
+        } else {
+            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Huen").build()).queue(message -> {
+                message.delete().queueAfter(15, TimeUnit.SECONDS);
+            });
         }
     }
 

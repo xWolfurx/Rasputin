@@ -164,8 +164,8 @@ public class RaidManager {
         this.raids.remove(id);
         Logger.info("Activity '" + raid.getRaidType().getName() + "' deleted. (" + reason + ")", true);
 
-        if(Main.getFileManager().getChannelFile().getChannelId("raidHistory") != -1L) {
-            TextChannel raidHistoryChannel = Main.getJDA().getTextChannelById(Main.getFileManager().getChannelFile().getChannelId("raidHistory"));
+        if(Main.getFileManager().getChannelFile().getChannel("raid_history") != null) {
+            TextChannel raidHistoryChannel = Main.getJDA().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("raid_history").getChannelId());
             raidHistoryChannel.sendMessage(raid.getHistoryEmbedBuilder(reason).build()).queue();
         } else {
             Logger.warning("Raid history channel is not configured yet.", true);

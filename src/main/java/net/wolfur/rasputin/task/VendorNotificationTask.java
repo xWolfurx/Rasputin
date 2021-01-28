@@ -65,12 +65,12 @@ public class VendorNotificationTask implements Runnable {
             Logger.warning("No default bungie user has been set.", true);
             return;
         }
-        if(Main.getFileManager().getChannelFile().getChannelId("vendor") == -1L) {
+        if(Main.getFileManager().getChannelFile().getChannel("vendor") == null) {
             Logger.warning("No channel id for vendor notification has been found.", true);
             return;
         }
 
-        TextChannel textChannel = Main.getJDA().getTextChannelById(Main.getFileManager().getChannelFile().getChannelId("vendor"));
+        TextChannel textChannel = Main.getJDA().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("vendor").getChannelId());
         MessageHistory history = new MessageHistory(textChannel);
         List<Message> messages;
 

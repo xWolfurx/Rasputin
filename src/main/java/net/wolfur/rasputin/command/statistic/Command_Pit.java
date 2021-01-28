@@ -28,53 +28,51 @@ public class Command_Pit implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if(Main.getFileManager().getChannelFile().isCommandChannel(event.getTextChannel().getIdLong())) {
-            BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
-            if (bungieUser.isRegistered()) {
-                if(args.length == 0) {
-                    bungieUser.requestProfile(ComponentType.METRICS);
-                    bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.DUNGEON, 250, true);
+        BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
+        if (bungieUser.isRegistered()) {
+            if(args.length == 0) {
+                bungieUser.requestProfile(ComponentType.METRICS);
+                bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.DUNGEON, 250, true);
 
-                    JsonObject pitOfHeresyDataObject = bungieUser.getProfile(ComponentType.METRICS);
-                    List<JsonObject> dungeonActivities = bungieUser.getActivityHistory(DestinyActivityModeType.DUNGEON);
+                JsonObject pitOfHeresyDataObject = bungieUser.getProfile(ComponentType.METRICS);
+                List<JsonObject> dungeonActivities = bungieUser.getActivityHistory(DestinyActivityModeType.DUNGEON);
 
-                    List<JsonObject> pitOfHeresyActivities = dungeonActivities.stream().filter(activity -> activity.getAsJsonObject("activityDetails").get("directorActivityHash").getAsLong() == 1375089621L).collect(Collectors.toList());
+                List<JsonObject> pitOfHeresyActivities = dungeonActivities.stream().filter(activity -> activity.getAsJsonObject("activityDetails").get("directorActivityHash").getAsLong() == 1375089621L).collect(Collectors.toList());
 
-                    event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, pitOfHeresyDataObject, pitOfHeresyActivities).build()).complete();
-                } else if(args.length == 1) {
-                    User targetUser = Main.getJDA().retrieveUserById(args[0].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", "")).complete();
-                    if (targetUser != null) {
-                        BungieUser targetBungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(targetUser);
-                        if (targetBungieUser.isRegistered()) {
-                            targetBungieUser.requestProfile(ComponentType.METRICS);
-                            targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.DUNGEON, 250, true);
+                event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, pitOfHeresyDataObject, pitOfHeresyActivities).build()).complete();
+            } else if(args.length == 1) {
+                User targetUser = Main.getJDA().retrieveUserById(args[0].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", "")).complete();
+                if (targetUser != null) {
+                    BungieUser targetBungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(targetUser);
+                    if (targetBungieUser.isRegistered()) {
+                        targetBungieUser.requestProfile(ComponentType.METRICS);
+                        targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.DUNGEON, 250, true);
 
-                            JsonObject pitOfHeresyDataObject = targetBungieUser.getProfile(ComponentType.METRICS);
-                            List<JsonObject> dungeonActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.DUNGEON);
+                        JsonObject pitOfHeresyDataObject = targetBungieUser.getProfile(ComponentType.METRICS);
+                        List<JsonObject> dungeonActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.DUNGEON);
 
-                            List<JsonObject> pitOfHeresyActivities = dungeonActivities.stream().filter(activity -> activity.getAsJsonObject("activityDetails").get("directorActivityHash").getAsLong() == 1375089621L).collect(Collectors.toList());
+                        List<JsonObject> pitOfHeresyActivities = dungeonActivities.stream().filter(activity -> activity.getAsJsonObject("activityDetails").get("directorActivityHash").getAsLong() == 1375089621L).collect(Collectors.toList());
 
-                            event.getTextChannel().sendMessage(this.createEmbedBuilder(targetBungieUser, pitOfHeresyDataObject, pitOfHeresyActivities).build()).complete();
-                        } else {
-                            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser User ist noch nicht registriert.").build()).queue(message -> {
-                                message.delete().queueAfter(15, TimeUnit.SECONDS);
-                            });
-                        }
+                        event.getTextChannel().sendMessage(this.createEmbedBuilder(targetBungieUser, pitOfHeresyDataObject, pitOfHeresyActivities).build()).complete();
                     } else {
-                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der User existiert nicht.").build()).queue(message -> {
+                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser User ist noch nicht registriert.").build()).queue(message -> {
                             message.delete().queueAfter(15, TimeUnit.SECONDS);
                         });
                     }
                 } else {
-                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Pit [@Player]").build()).queue(message -> {
+                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der User existiert nicht.").build()).queue(message -> {
                         message.delete().queueAfter(15, TimeUnit.SECONDS);
                     });
                 }
             } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Pit [@Player]").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);
                 });
             }
+        } else {
+            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                message.delete().queueAfter(15, TimeUnit.SECONDS);
+            });
         }
     }
 

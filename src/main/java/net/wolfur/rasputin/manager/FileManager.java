@@ -1,6 +1,6 @@
 package net.wolfur.rasputin.manager;
 
-import net.wolfur.rasputin.file.ChannelFile;
+import net.wolfur.rasputin.channel.ChannelFile;
 import net.wolfur.rasputin.file.ConfigFile;
 import net.wolfur.rasputin.file.EmoteDefinitionFile;
 import net.wolfur.rasputin.file.RoleDefinitionFile;

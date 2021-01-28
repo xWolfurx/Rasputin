@@ -1,17 +1,15 @@
-package net.wolfur.rasputin.command.notify;
+package net.wolfur.rasputin.command.moderation;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.wolfur.rasputin.Main;
 import net.wolfur.rasputin.bungie.BungieUser;
 import net.wolfur.rasputin.core.Command;
-import net.wolfur.rasputin.other.RoleType;
 
 import java.awt.*;
 import java.util.concurrent.TimeUnit;
 
-public class Command_Notify implements Command {
-
+public class Command_Ping implements Command {
     @Override
     public boolean called(String[] args, MessageReceivedEvent event) {
         return false;
@@ -21,18 +19,13 @@ public class Command_Notify implements Command {
     public void action(String[] args, MessageReceivedEvent event) {
         BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
         if(bungieUser.isRegistered()) {
-            if (args.length == 1) {
-                if(args[0].equalsIgnoreCase("vendor")) {
-                    if(bungieUser.hasRole(event.getMember(), Main.getFileManager().getRoleDefinitionFile().getRoleId(RoleType.VENDOR_NOTIFY))) {
-                        bungieUser.removeRole(Main.getFileManager().getRoleDefinitionFile().getRoleId(RoleType.VENDOR_NOTIFY));
-                        event.getTextChannel().sendMessage("Benachrichtigungen der Verkäufer für " + event.getAuthor().getAsMention() + " wurden deaktiviert.").complete();
-                    } else {
-                        bungieUser.addRole(Main.getFileManager().getRoleDefinitionFile().getRoleId(RoleType.VENDOR_NOTIFY));
-                        event.getTextChannel().sendMessage("Benachrichtigungen der Verkäufer für " + event.getAuthor().getAsMention() + " wurden aktiviert.").complete();
-                    }
-                }
+            if(args.length == 0) {
+                long gatewayPing = Main.getJDA().getGatewayPing();
+                Main.getJDA().getRestPing().queue((time) -> {
+                    event.getTextChannel().sendMessageFormat("Dein Ping: %dms", time, gatewayPing).queue();
+                });
             } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Notify <Type>").build()).queue(message -> {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Ping").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);
                 });
             }
@@ -45,5 +38,6 @@ public class Command_Notify implements Command {
 
     @Override
     public void executed(boolean success, MessageReceivedEvent event) {
+
     }
 }

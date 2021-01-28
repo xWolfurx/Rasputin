@@ -19,12 +19,10 @@ public class Command_Help implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if(Main.getFileManager().getChannelFile().isCommandChannel(event.getTextChannel().getIdLong())) {
-            if(args.length == 0) {
-                event.getTextChannel().sendMessage(this.getEmbedBuilder("general").build()).queue();
-            } else {
-                event.getTextChannel().sendMessage(this.getEmbedBuilder(args[0]).build()).queue();
-            }
+        if(args.length == 0) {
+            event.getTextChannel().sendMessage(this.getEmbedBuilder("general").build()).queue();
+        } else {
+            event.getTextChannel().sendMessage(this.getEmbedBuilder(args[0]).build()).queue();
         }
     }
 

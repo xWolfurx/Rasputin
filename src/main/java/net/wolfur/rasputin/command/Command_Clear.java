@@ -20,8 +20,7 @@ public class Command_Clear implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if (event.getTextChannel() != null) {
-            if (Utils.hasRole(event.getMember(), Utils.getRoleByName("Admin")) || Utils.hasRole(event.getMember(), Utils.getRoleByName("Administrator")) || Utils.hasRole(event.getMember(), Utils.getRoleByName("IT Techniker"))) {
+        if (Utils.hasRole(event.getMember(), Utils.getRoleByName("Admin")) || Utils.hasRole(event.getMember(), Utils.getRoleByName("Administrator")) || Utils.hasRole(event.getMember(), Utils.getRoleByName("IT Techniker"))) {
                 try {
                     MessageHistory history = new MessageHistory(event.getTextChannel());
                     List<Message> messages;
@@ -45,7 +44,6 @@ public class Command_Clear implements Command {
                     event.getTextChannel().sendMessage(new EmbedBuilder().setDescription("An error occurred while performing the command.").addField("Error Type", e.getLocalizedMessage(), false).addField("Message", e.getMessage(), false).build()).queue();
                 }
             }
-        }
     }
 
     @Override

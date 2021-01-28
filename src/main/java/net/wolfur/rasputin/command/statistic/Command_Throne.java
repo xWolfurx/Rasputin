@@ -28,53 +28,51 @@ public class Command_Throne implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if(Main.getFileManager().getChannelFile().isCommandChannel(event.getTextChannel().getIdLong())) {
-            BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
-            if (bungieUser.isRegistered()) {
-                if(args.length == 0) {
-                    bungieUser.requestProfile(ComponentType.METRICS);
-                    bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.DUNGEON, 250, true);
+        BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
+        if(bungieUser.isRegistered()) {
+            if(args.length == 0) {
+                bungieUser.requestProfile(ComponentType.METRICS);
+                bungieUser.requestDestinyActivityHistory(DestinyActivityModeType.DUNGEON, 250, true);
 
-                    JsonObject shatteredThroneDataObject = bungieUser.getProfile(ComponentType.METRICS);
-                    List<JsonObject> dungeonActivities = bungieUser.getActivityHistory(DestinyActivityModeType.DUNGEON);
+                JsonObject shatteredThroneDataObject = bungieUser.getProfile(ComponentType.METRICS);
+                List<JsonObject> dungeonActivities = bungieUser.getActivityHistory(DestinyActivityModeType.DUNGEON);
 
-                    List<JsonObject> shatteredThroneActivities = dungeonActivities.stream().filter(activity -> activity.getAsJsonObject("activityDetails").get("directorActivityHash").getAsLong() == 1893059148L).collect(Collectors.toList());
+                List<JsonObject> shatteredThroneActivities = dungeonActivities.stream().filter(activity -> activity.getAsJsonObject("activityDetails").get("directorActivityHash").getAsLong() == 1893059148L).collect(Collectors.toList());
 
-                    event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, shatteredThroneDataObject, shatteredThroneActivities).build()).complete();
-                } else if(args.length == 1) {
-                    User targetUser = Main.getJDA().retrieveUserById(args[0].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", "")).complete();
-                    if (targetUser != null) {
-                        BungieUser targetBungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(targetUser);
-                        if (targetBungieUser.isRegistered()) {
-                            targetBungieUser.requestProfile(ComponentType.METRICS);
-                            targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.DUNGEON, 250, true);
+                event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, shatteredThroneDataObject, shatteredThroneActivities).build()).complete();
+            } else if(args.length == 1) {
+                User targetUser = Main.getJDA().retrieveUserById(args[0].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", "")).complete();
+                if(targetUser != null) {
+                    BungieUser targetBungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(targetUser);
+                    if(targetBungieUser.isRegistered()) {
+                        targetBungieUser.requestProfile(ComponentType.METRICS);
+                        targetBungieUser.requestDestinyActivityHistory(DestinyActivityModeType.DUNGEON, 250, true);
 
-                            JsonObject shatteredThroneDataObject = targetBungieUser.getProfile(ComponentType.METRICS);
-                            List<JsonObject> dungeonActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.DUNGEON);
+                        JsonObject shatteredThroneDataObject = targetBungieUser.getProfile(ComponentType.METRICS);
+                        List<JsonObject> dungeonActivities = targetBungieUser.getActivityHistory(DestinyActivityModeType.DUNGEON);
 
-                            List<JsonObject> shatteredThroneActivities = dungeonActivities.stream().filter(activity -> activity.getAsJsonObject("activityDetails").get("directorActivityHash").getAsLong() == 1893059148L).collect(Collectors.toList());
+                        List<JsonObject> shatteredThroneActivities = dungeonActivities.stream().filter(activity -> activity.getAsJsonObject("activityDetails").get("directorActivityHash").getAsLong() == 1893059148L).collect(Collectors.toList());
 
-                            event.getTextChannel().sendMessage(this.createEmbedBuilder(targetBungieUser, shatteredThroneDataObject, shatteredThroneActivities).build()).complete();
-                        } else {
-                            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser User ist noch nicht registriert.").build()).queue(message -> {
-                                message.delete().queueAfter(15, TimeUnit.SECONDS);
-                            });
-                        }
+                        event.getTextChannel().sendMessage(this.createEmbedBuilder(targetBungieUser, shatteredThroneDataObject, shatteredThroneActivities).build()).complete();
                     } else {
-                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der User existiert nicht.").build()).queue(message -> {
+                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser User ist noch nicht registriert.").build()).queue(message -> {
                             message.delete().queueAfter(15, TimeUnit.SECONDS);
                         });
                     }
                 } else {
-                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Throne [@Player]").build()).queue(message -> {
+                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der User existiert nicht.").build()).queue(message -> {
                         message.delete().queueAfter(15, TimeUnit.SECONDS);
                     });
                 }
             } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Throne [@Player]").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);
                 });
             }
+        } else {
+            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                message.delete().queueAfter(15, TimeUnit.SECONDS);
+            });
         }
     }
 
@@ -97,7 +95,7 @@ public class Command_Throne implements Command {
         boolean bungieError = false;
 
         if(shatteredThroneActivities.size() > 0) {
-            for(JsonObject activity : shatteredThroneActivities) {
+            for (JsonObject activity : shatteredThroneActivities) {
                 try {
                     kills += activity.getAsJsonObject("values").getAsJsonObject("kills").getAsJsonObject("basic").get("value").getAsInt();
                     deaths += activity.getAsJsonObject("values").getAsJsonObject("deaths").getAsJsonObject("basic").get("value").getAsInt();
@@ -106,7 +104,7 @@ public class Command_Throne implements Command {
 
                     if(deaths == 0) {
                         killsDeathsRatio = kills;
-                        killsDeathsAssistsRatio = (double)kills + (double)assists;
+                        killsDeathsAssistsRatio = (double) kills + (double) assists;
                     } else {
                         killsDeathsRatio = (((double) kills) / ((double) deaths));
                         killsDeathsAssistsRatio = (((double) kills) + ((double) assists)) / ((double) deaths);
@@ -130,7 +128,7 @@ public class Command_Throne implements Command {
                 .addField("K/D", bungieError ? "Bungie API Error" : String.valueOf(this.round(killsDeathsRatio, 2)), true)
                 .addField("(K+A)/D", bungieError ? "Bungie API Error" : String.valueOf(this.round(killsDeathsAssistsRatio, 2)), true)
                 .addField("Playtime", bungieError ? "Bungie API Error" : TimeUtil.timeToString((playtime * 1000), true), true)
-                .addField("Flawless",  flawless ? "Abgeschlossen" : "Nicht abgeschlossen", true)
+                .addField("Flawless", flawless ? "Abgeschlossen" : "Nicht abgeschlossen", true)
                 .addField("Solo & Flawless", soloFlawless ? "Abgeschlossen" : "Nicht abgeschlossen", true)
                 .setThumbnail("https://www.bungie.net/common/destiny2_content/icons/DestinyActivityModeDefinition_f20ebb76bee675ca429e470cec58cc7b.png");
 

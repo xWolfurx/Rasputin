@@ -30,34 +30,32 @@ public class Command_Gunsmith implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if(Main.getFileManager().getChannelFile().isCommandChannel(event.getTextChannel().getIdLong())) {
-            BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
-            if(bungieUser.isRegistered()) {
-                if(args.length == 0) {
-                    bungieUser.requestVendor(VendorType.BANSHEE_44, ComponentType.VENDOR_SALES);
-                    bungieUser.requestProfile(ComponentType.PROFILE_CURRENCIES);
-                    bungieUser.requestProfile(ComponentType.PROFILE_INVENTORIES);
+        BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
+        if(bungieUser.isRegistered()) {
+            if(args.length == 0) {
+                bungieUser.requestVendor(VendorType.BANSHEE_44, ComponentType.VENDOR_SALES);
+                bungieUser.requestProfile(ComponentType.PROFILE_CURRENCIES);
+                bungieUser.requestProfile(ComponentType.PROFILE_INVENTORIES);
 
-                    JsonObject gunsmithObject = bungieUser.getVendor(VendorType.BANSHEE_44, ComponentType.VENDOR_SALES);
+                JsonObject gunsmithObject = bungieUser.getVendor(VendorType.BANSHEE_44, ComponentType.VENDOR_SALES);
 
-                    if(gunsmithObject == null) {
-                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Derzeit können keine Daten über Banshee-44 gesammelt werden.").build()).complete();
-                        return;
-                    }
-
-                    GunsmithInformation gunsmithInformation = new GunsmithInformation(gunsmithObject);
-                    event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, gunsmithInformation).build()).complete();
-
-                } else {
-                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Gunsmith").build()).queue(message -> {
-                        message.delete().queueAfter(15, TimeUnit.SECONDS);
-                    });
+                if(gunsmithObject == null) {
+                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Derzeit können keine Daten über Banshee-44 gesammelt werden.").build()).complete();
+                    return;
                 }
+
+                GunsmithInformation gunsmithInformation = new GunsmithInformation(gunsmithObject);
+                event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, gunsmithInformation).build()).complete();
+
             } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Gunsmith").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);
                 });
             }
+        } else {
+            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                message.delete().queueAfter(15, TimeUnit.SECONDS);
+            });
         }
     }
 

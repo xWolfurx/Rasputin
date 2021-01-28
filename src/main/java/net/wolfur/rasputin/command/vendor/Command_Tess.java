@@ -24,33 +24,31 @@ public class Command_Tess implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if(Main.getFileManager().getChannelFile().isCommandChannel(event.getTextChannel().getIdLong())) {
-            BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
-            if(bungieUser.isRegistered()) {
-                if(args.length == 0) {
-                    bungieUser.requestVendor(VendorType.TESS_EVERIS, ComponentType.VENDOR_SALES);
-                    bungieUser.requestProfile(ComponentType.PROFILE_CURRENCIES);
-                    bungieUser.requestProfile(ComponentType.PROFILE_INVENTORIES);
+        BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
+        if(bungieUser.isRegistered()) {
+            if(args.length == 0) {
+                bungieUser.requestVendor(VendorType.TESS_EVERIS, ComponentType.VENDOR_SALES);
+                bungieUser.requestProfile(ComponentType.PROFILE_CURRENCIES);
+                bungieUser.requestProfile(ComponentType.PROFILE_INVENTORIES);
 
-                    JsonObject tessObject = bungieUser.getVendor(VendorType.TESS_EVERIS, ComponentType.VENDOR_SALES);
+                JsonObject tessObject = bungieUser.getVendor(VendorType.TESS_EVERIS, ComponentType.VENDOR_SALES);
 
-                    if (tessObject == null) {
-                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Derzeit können keine Daten über Tess Everis gesammelt werden.").build()).complete();
-                        return;
-                    }
+                if (tessObject == null) {
+                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Derzeit können keine Daten über Tess Everis gesammelt werden.").build()).complete();
+                    return;
+                }
 
                     //SpiderInformation spiderInformation = new SpiderInformation(spiderObject);
                     //event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, spiderInformation).build()).complete();
-                } else {
-                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Tess").build()).queue(message -> {
-                        message.delete().queueAfter(15, TimeUnit.SECONDS);
-                    });
-                }
             } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Tess").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);
                 });
             }
+        } else {
+            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                message.delete().queueAfter(15, TimeUnit.SECONDS);
+            });
         }
     }
 

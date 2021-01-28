@@ -10,8 +10,10 @@ import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.wolfur.rasputin.command.*;
 import net.wolfur.rasputin.command.clan.Command_Clan;
 import net.wolfur.rasputin.command.fun.Command_Huen;
+import net.wolfur.rasputin.command.moderation.Command_Ping;
 import net.wolfur.rasputin.command.notify.Command_Notify;
 import net.wolfur.rasputin.command.punish.*;
+import net.wolfur.rasputin.command.raid.Command_Raid;
 import net.wolfur.rasputin.command.registration.Command_Register;
 import net.wolfur.rasputin.command.reset.Command_Daily;
 import net.wolfur.rasputin.command.statistic.*;
@@ -41,6 +43,8 @@ public class Main {
 
     private static Guild guild;
 
+    private static long startTime;
+
     private static WebServer webServer;
 
     private static FileManager fileManager;
@@ -63,6 +67,8 @@ public class Main {
             Main.vendorNotificationTask.stop();
         }));
 
+        Main.startTime = System.currentTimeMillis();
+
         System.out.println(" ____       _      ____    ____    _   _   _____   ___   _   _");
         System.out.println("|  _ \\     / \\    / ___|  |  _ \\  | | | | |_   _| |_ _| | \\ | |");
         System.out.println("| |_) |   / _ \\   \\___ \\  | |_) | | | | |   | |    | |  |  \\| |");
@@ -76,7 +82,7 @@ public class Main {
 
         Main.fileManager = new FileManager();
 
-        if(getFileManager().getChannelFile().getChannelId("log") == -1L) {
+        if(getFileManager().getChannelFile().getChannel("log") == null || getFileManager().getChannelFile().getChannel("log").getChannelId() == -1L) {
             System.out.println("Please configure id for log channel.");
             try {
                 Thread.sleep(5000L);
@@ -86,7 +92,7 @@ public class Main {
             System.exit(-1);
         }
 
-        if(getFileManager().getChannelFile().getChannelId("error") == -1L) {
+        if(getFileManager().getChannelFile().getChannel("error") == null || getFileManager().getChannelFile().getChannel("error").getChannelId() == -1L) {
             System.out.println("Please configure id for error channel.");
             try {
                 Thread.sleep(5000L);
@@ -162,7 +168,7 @@ public class Main {
         Logger.info("Initialize successfully.", true);
     }
 
-    private static String getVersion() {
+    public static String getVersion() {
         try {
             Properties properties = new Properties();
             properties.load(Main.class.getResourceAsStream("/pom.properties"));
@@ -193,6 +199,9 @@ public class Main {
     private static int loadCommands() {
         //BUNGIE COMMANDS
 
+        //MODERATION
+        CommandHandler.commands.put("ping", new Command_Ping());
+
         CommandHandler.commands.put("raid", new Command_Raid());
         CommandHandler.commands.put("ban", new Command_Ban());
         CommandHandler.commands.put("tempban", new Command_Tempban());
@@ -218,6 +227,7 @@ public class Main {
         CommandHandler.commands.put("pit", new Command_Pit());
         CommandHandler.commands.put("throne", new Command_Throne());
         CommandHandler.commands.put("ranking", new Command_Ranking());
+        CommandHandler.commands.put("status", new Command_Status());
 
         CommandHandler.commands.put("clan", new Command_Clan());
 
@@ -260,6 +270,10 @@ public class Main {
 
     public static VendorNotificationTask getVendorNotificationTask() {
         return Main.vendorNotificationTask;
+    }
+
+    public static long getStartTime() {
+        return Main.startTime;
     }
 
 }

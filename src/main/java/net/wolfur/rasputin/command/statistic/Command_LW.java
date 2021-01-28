@@ -29,53 +29,51 @@ public class Command_LW implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if(Main.getFileManager().getChannelFile().isCommandChannel(event.getTextChannel().getIdLong())) {
-            BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
-            if(bungieUser.isRegistered()) {
-                if(args.length == 0) {
-                    bungieUser.requestProfile(ComponentType.METRICS);
-                    bungieUser.requestProfile(ComponentType.RECORDS);
-                    bungieUser.requestProfile(ComponentType.COLLECTIBLES);
-                    bungieUser.requestHistoricalStats();
+        BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
+        if(bungieUser.isRegistered()) {
+            if(args.length == 0) {
+                bungieUser.requestProfile(ComponentType.METRICS);
+                bungieUser.requestProfile(ComponentType.RECORDS);
+                bungieUser.requestProfile(ComponentType.COLLECTIBLES);
+                bungieUser.requestHistoricalStats();
 
-                    JsonObject lastWishDataObject = bungieUser.getProfile(ComponentType.METRICS);
-                    List<JsonObject> lastWishActivities = bungieUser.getHistoricalStats(2122313384L);
+                JsonObject lastWishDataObject = bungieUser.getProfile(ComponentType.METRICS);
+                List<JsonObject> lastWishActivities = bungieUser.getHistoricalStats(2122313384L);
 
-                    event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, lastWishDataObject, lastWishActivities).build()).queue();
-                } else if(args.length == 1) {
-                    User targetUser = Main.getJDA().retrieveUserById(args[0].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", "")).complete();
-                    if (targetUser != null) {
-                        BungieUser targetBungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(targetUser);
-                        if (targetBungieUser.isRegistered()) {
-                            targetBungieUser.requestProfile(ComponentType.METRICS);
-                            targetBungieUser.requestProfile(ComponentType.RECORDS);
-                            targetBungieUser.requestProfile(ComponentType.COLLECTIBLES);
-                            targetBungieUser.requestHistoricalStats();
+                event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, lastWishDataObject, lastWishActivities).build()).queue();
+            } else if(args.length == 1) {
+                User targetUser = Main.getJDA().retrieveUserById(args[0].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", "")).complete();
+                if (targetUser != null) {
+                    BungieUser targetBungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(targetUser);
+                    if (targetBungieUser.isRegistered()) {
+                        targetBungieUser.requestProfile(ComponentType.METRICS);
+                        targetBungieUser.requestProfile(ComponentType.RECORDS);
+                        targetBungieUser.requestProfile(ComponentType.COLLECTIBLES);
+                        targetBungieUser.requestHistoricalStats();
 
-                            JsonObject lastWishDataObject = targetBungieUser.getProfile(ComponentType.METRICS);
-                            List<JsonObject> lastWishActivities = targetBungieUser.getHistoricalStats(2122313384L);
+                        JsonObject lastWishDataObject = targetBungieUser.getProfile(ComponentType.METRICS);
+                        List<JsonObject> lastWishActivities = targetBungieUser.getHistoricalStats(2122313384L);
 
-                            event.getTextChannel().sendMessage(this.createEmbedBuilder(targetBungieUser, lastWishDataObject, lastWishActivities).build()).queue();
-                        } else {
-                            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der angegebene User hat sich noch nicht registriert.").build()).queue(message -> {
-                                message.delete().queueAfter(15, TimeUnit.SECONDS);
-                            });
-                        }
+                        event.getTextChannel().sendMessage(this.createEmbedBuilder(targetBungieUser, lastWishDataObject, lastWishActivities).build()).queue();
                     } else {
-                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der User existiert nicht.").build()).queue(message -> {
+                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der angegebene User hat sich noch nicht registriert.").build()).queue(message -> {
                             message.delete().queueAfter(15, TimeUnit.SECONDS);
                         });
                     }
                 } else {
-                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .LW [@Player]").build()).queue(message -> {
+                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der User existiert nicht.").build()).queue(message -> {
                         message.delete().queueAfter(15, TimeUnit.SECONDS);
                     });
                 }
             } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .LW [@Player]").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);
                 });
             }
+        } else {
+            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                message.delete().queueAfter(15, TimeUnit.SECONDS);
+            });
         }
     }
 

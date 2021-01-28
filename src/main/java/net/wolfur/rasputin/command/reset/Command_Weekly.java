@@ -23,20 +23,18 @@ public class Command_Weekly implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if(Main.getFileManager().getChannelFile().isCommandChannel(event.getTextChannel().getIdLong())) {
-            BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
-            if(bungieUser.isRegistered()) {
-                bungieUser.requestMilestones();
+        BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
+        if(bungieUser.isRegistered()) {
+            bungieUser.requestMilestones();
 
-                JsonObject milestonesObject = bungieUser.getMilestonesObject();
-                JsonObject activityModifierDefinition = bungieUser.getManifest(DestinyDefinitionType.DESTINY_ACTIVITY_MODIFIER_DEFINITION);
+            JsonObject milestonesObject = bungieUser.getMilestonesObject();
+            JsonObject activityModifierDefinition = bungieUser.getManifest(DestinyDefinitionType.DESTINY_ACTIVITY_MODIFIER_DEFINITION);
 
-                //vent.getTextChannel().sendMessage(this.createEmbedBuilder(milestonesObject, activityModifierDefinition).build()).complete();
-            } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
-                    message.delete().queueAfter(15, TimeUnit.SECONDS);
-                });
-            }
+            //vent.getTextChannel().sendMessage(this.createEmbedBuilder(milestonesObject, activityModifierDefinition).build()).complete();
+        } else {
+            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte registriere dich, um diesen Befehl nutzen zu können." + "\n\n" + "Registriere dich mit **.Register**.").build()).queue(message -> {
+                message.delete().queueAfter(15, TimeUnit.SECONDS);
+            });
         }
     }
 

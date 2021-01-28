@@ -44,7 +44,7 @@ public class Logger {
         }
         if(discordMessage) {
             if (Main.getJDA() != null) {
-                TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannelId("error"));
+                TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("error").getChannelId());
                 textChannel.sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("[" + simpleDateFormat.format(new Date()) + "] " + message.toString()).build()).queue();
             }
         }
@@ -60,7 +60,7 @@ public class Logger {
         }
         if(discordMessage) {
             if (Main.getJDA() != null) {
-                TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannelId("log"));
+                TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("log").getChannelId());
                 textChannel.sendMessage(new EmbedBuilder().setColor(Color.YELLOW).setDescription("[" + simpleDateFormat.format(new Date()) + "] " + message.toString()).build()).queue();
             }
         }
@@ -76,7 +76,7 @@ public class Logger {
         }
         if(discordMessage) {
             if (Main.getJDA() != null) {
-                TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannelId("log"));
+                TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("log").getChannelId());
                 textChannel.sendMessage(new EmbedBuilder().setColor(Color.GREEN).setDescription("[" + simpleDateFormat.format(new Date()) + "] " + message.toString()).build()).queue();
             }
         }

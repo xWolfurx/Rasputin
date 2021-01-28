@@ -463,7 +463,7 @@ public class Raid {
     }
 
     private void sendMessage(int needed) {
-        TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannelId("talk"));
+        TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("talk").getChannelId());
         if(textChannel != null) {
             textChannel.sendMessage("Es " + (needed == 1 ? "wird" : "werden") + " noch " + needed + " Hüter für den Raid '" + this.getRaidType().getBetterName() + "' benötigt.").queue();
         }
