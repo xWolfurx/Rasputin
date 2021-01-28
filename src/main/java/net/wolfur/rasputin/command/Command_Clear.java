@@ -20,30 +20,28 @@ public class Command_Clear implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if (Utils.hasRole(event.getMember(), Utils.getRoleByName("Admin")) || Utils.hasRole(event.getMember(), Utils.getRoleByName("Administrator")) || Utils.hasRole(event.getMember(), Utils.getRoleByName("IT Techniker"))) {
+        try {
+            MessageHistory history = new MessageHistory(event.getTextChannel());
+            List<Message> messages;
+            if (args.length == 1 && args[0].equalsIgnoreCase("all")) {
                 try {
-                    MessageHistory history = new MessageHistory(event.getTextChannel());
-                    List<Message> messages;
-                    if (args.length == 1 && args[0].equalsIgnoreCase("all")) {
-                        try {
-                            while (true) {
-                                messages = history.retrievePast(1).complete();
-                                messages.get(0).delete().queue();
-                            }
-                        } catch (Exception e) {
-                        }
-                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.GREEN).setDescription("Successfully deleted all messages.").build()).queue(message -> {
-                            message.delete().queueAfter(30, TimeUnit.SECONDS);
-                        });
-                    } else {
-                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Clear All").build()).queue(message -> {
-                            message.delete().queueAfter(15, TimeUnit.SECONDS);
-                        });
+                    while (true) {
+                        messages = history.retrievePast(1).complete();
+                        messages.get(0).delete().queue();
                     }
                 } catch (Exception e) {
-                    event.getTextChannel().sendMessage(new EmbedBuilder().setDescription("An error occurred while performing the command.").addField("Error Type", e.getLocalizedMessage(), false).addField("Message", e.getMessage(), false).build()).queue();
                 }
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.GREEN).setDescription("Successfully deleted all messages.").build()).queue(message -> {
+                    message.delete().queueAfter(30, TimeUnit.SECONDS);
+                });
+            } else {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Clear All").build()).queue(message -> {
+                    message.delete().queueAfter(15, TimeUnit.SECONDS);
+                });
             }
+        } catch (Exception e) {
+            event.getTextChannel().sendMessage(new EmbedBuilder().setDescription("An error occurred while performing the command.").addField("Error Type", e.getLocalizedMessage(), false).addField("Message", e.getMessage(), false).build()).queue();
+        }
     }
 
     @Override

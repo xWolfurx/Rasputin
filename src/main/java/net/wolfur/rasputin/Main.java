@@ -80,6 +80,8 @@ public class Main {
         System.out.println("  ✦ Starting initialization... - Rasputin version " + getVersion());
         System.out.println(" ");
 
+        System.out.println("Loaded " + Main.loadCommands() + " commands.");
+
         Main.fileManager = new FileManager();
 
         if(getFileManager().getChannelFile().getChannel("log") == null || getFileManager().getChannelFile().getChannel("log").getChannelId() == -1L) {
@@ -131,7 +133,6 @@ public class Main {
         Main.builder.setActivity(Activity.playing("REBOOTING SYSTEM..."));
 
         Main.loadEvents();
-        Logger.info("Loaded " + Main.loadCommands() + " commands.", true);
 
         try {
             Main.jda = Main.builder.build();

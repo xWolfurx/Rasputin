@@ -59,6 +59,7 @@ public class Command_Clan implements Command {
 
     }
 
+
     private EmbedBuilder createEmbedBuilder(BungieUser targetUser, ClanData clanData, ClanRewardState clanRewardState, Map<DestinyCharacter, JsonObject> characterData) {
         StringBuilder description = new StringBuilder();
 
