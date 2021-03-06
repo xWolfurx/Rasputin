@@ -38,13 +38,14 @@ public class Command_Current implements Command {
                 JsonObject jsonObject = characterActivities.getAsJsonObject("Response").getAsJsonObject("characterActivities").getAsJsonObject("data").getAsJsonObject(String.valueOf(lastPlayedDestinyCharacter.getCharacterId()));
 
                 long currentActivityHash = jsonObject.get("currentActivityHash").getAsLong();
+                long currentActivityModeHash = jsonObject.get("currentActivityModeHash").getAsLong();
 
                 if(currentActivityHash == 0) {
                     event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("**" + event.getAuthor().getName() + "** is not currently playing.").setColor(Color.RED).build()).complete();
                     return;
                 }
 
-                event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, currentActivityHash).build()).complete();
+                event.getTextChannel().sendMessage(this.createEmbedBuilder(bungieUser, currentActivityHash, currentActivityModeHash).build()).complete();
             } else if(args.length == 1) {
                 User targetUser = Main.getJDA().retrieveUserById(args[0].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", "")).complete();
                 if (targetUser != null) {
@@ -60,13 +61,14 @@ public class Command_Current implements Command {
                         JsonObject jsonObject = characterActivities.getAsJsonObject("Response").getAsJsonObject("characterActivities").getAsJsonObject("data").getAsJsonObject(String.valueOf(lastPlayedDestinyCharacter.getCharacterId()));
 
                         long currentActivityHash = jsonObject.get("currentActivityHash").getAsLong();
+                        long currentActivityModeHash = jsonObject.get("currentActivityModeHash").getAsLong();
 
                         if(currentActivityHash == 0) {
-                            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("**" + event.getAuthor().getName() + "** is not currently playing.").setColor(Color.RED).build()).complete();
+                            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("**" + targetUser.getName() + "** is not currently playing.").setColor(Color.RED).build()).complete();
                             return;
                         }
 
-                        event.getTextChannel().sendMessage(this.createEmbedBuilder(targetBungieUser, currentActivityHash).build()).complete();
+                        event.getTextChannel().sendMessage(this.createEmbedBuilder(targetBungieUser, currentActivityHash, currentActivityModeHash).build()).complete();
                     } else {
                         event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser Spieler ist noch nicht registriert.").build()).queue(message -> {
                             message.delete().queueAfter(15, TimeUnit.SECONDS);
@@ -94,18 +96,30 @@ public class Command_Current implements Command {
 
     }
 
-    private EmbedBuilder createEmbedBuilder(BungieUser targetUser, long currentActivityHash) {
+    private EmbedBuilder createEmbedBuilder(BungieUser targetUser, long currentActivityHash, long currentActivityModeHash) {
         JsonObject destinyActivityDefinition = targetUser.getManifest(DestinyDefinitionType.DESTINY_ACTIVITY_DEFINITION);
+        JsonObject destinyActivityModeDefinition = targetUser.getManifest(DestinyDefinitionType.DESTINY_ACTIVITY_MODE_DEFINITION);
 
+        if(currentActivityHash == 82913930L) {
+            EmbedBuilder embedBuilder = new EmbedBuilder()
+                    .setColor(Color.MAGENTA)
+                    .setTitle("Activities > Current Activity: " + targetUser.getUser().getName())
+                    .setDescription("**" + targetUser.getUser().getName() + "** is in **Orbit**.")
+                    .setFooter( "In Orbit | " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), Main.getJDA().getSelfUser().getAvatarUrl());
+
+            return embedBuilder;
+        }
+
+        String activityModeName = destinyActivityModeDefinition.getAsJsonObject(String.valueOf(currentActivityModeHash)).getAsJsonObject("displayProperties").get("name").getAsString();
         String activityName = destinyActivityDefinition.getAsJsonObject(String.valueOf(currentActivityHash)).getAsJsonObject("displayProperties").get("name").getAsString();
         String iconUrl = destinyActivityDefinition.getAsJsonObject(String.valueOf(currentActivityHash)).get("pgcrImage").getAsString();
 
         EmbedBuilder embedBuilder = new EmbedBuilder()
                 .setColor(Color.MAGENTA)
                 .setTitle("Activities > Current Activity: " + targetUser.getUser().getName())
-                .setDescription("**" + targetUser.getUser().getName() + "** is playing **" + activityName + "**")
+                .setDescription("**" + targetUser.getUser().getName() + "** is playing **" + activityModeName + "** on **" + activityName + "**.")
                 .setThumbnail("https://www.bungie.net" + iconUrl)
-                .setFooter(activityName + " | " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), Main.getJDA().getSelfUser().getAvatarUrl());
+                .setFooter(activityModeName + " | " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), Main.getJDA().getSelfUser().getAvatarUrl());
 
         return embedBuilder;
     }
