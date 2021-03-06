@@ -308,4 +308,8 @@ public class RaidManager {
     public Map<User, Raid> getChangeTime() {
         return this.changeTime;
     }
+
+    public Map<String, Raid> getRaids() {
+        return this.raids;
+    }
 }

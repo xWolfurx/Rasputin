@@ -30,7 +30,7 @@ public class Event_MessageReceivedEvent extends ListenerAdapter {
                     Date time = sdf.parse(event.getMessage().getContentDisplay());
                     if (new SimpleDateFormat("dd.MM.yyyy HH:mm").parse(new SimpleDateFormat("dd.MM.yyyy").format(raid.getDate()) + " " + sdf.format(time)).before(new Date())) {
                         event.getAuthor().openPrivateChannel().queue(channel -> {
-                            channel.sendMessage(new EmbedBuilder().setDescription("Die angegbene Zeit liegt in der Vergangenheit.").setColor(Color.RED).build()).queue();
+                            channel.sendMessage(new EmbedBuilder().setDescription("Die angegebene Zeit liegt in der Vergangenheit.").setColor(Color.RED).build()).queue();
                         });
                         return;
                     }

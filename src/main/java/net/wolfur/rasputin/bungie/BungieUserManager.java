@@ -2,6 +2,7 @@ package net.wolfur.rasputin.bungie;
 
 import net.dv8tion.jda.api.entities.User;
 import net.wolfur.rasputin.Main;
+import net.wolfur.rasputin.util.Logger;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -64,6 +65,12 @@ public class BungieUserManager {
             }
         }
         return null;
+    }
+
+    public void checkUsers() {
+        for(BungieUser bungieUsers : this.bungieUsers.values()) {
+            bungieUsers.startRefreshTimer();
+        }
     }
 
 }

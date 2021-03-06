@@ -61,7 +61,7 @@ public class WebServer {
     }
 
     public void stop() {
-        this.server.stop(-1);
+        this.server.stop(0);
         this.server = null;
         Logger.warning("Shut down Web-Server.", true);
     }

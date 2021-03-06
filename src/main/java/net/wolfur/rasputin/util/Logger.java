@@ -2,7 +2,9 @@ package net.wolfur.rasputin.util;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.User;
 import net.wolfur.rasputin.Main;
+import net.wolfur.rasputin.web.StatusCode;
 
 import java.awt.*;
 import java.io.*;
@@ -79,6 +81,34 @@ public class Logger {
                 TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("log").getChannelId());
                 textChannel.sendMessage(new EmbedBuilder().setColor(Color.GREEN).setDescription("[" + simpleDateFormat.format(new Date()) + "] " + message.toString()).build()).queue();
             }
+        }
+    }
+
+    public static void requestRefused(Object message, int statusCode, User user) {
+        EmbedBuilder embedBuilder = new EmbedBuilder()
+                                    .setColor(Color.RED)
+                                    .setDescription("[" + simpleDateFormat.format(new Date()) + "] " + message.toString() + "\n" +
+                                            "(" + StatusCode.getByCode(statusCode).getBetterName() + ")" + "\n" +
+                                            "Affected User: " + user.getAsMention());
+
+        if(statusCode == 503) {
+            Utils.handleMaintenance(true);
+        } else {
+            if(Main.isMaintenance()) {
+                Utils.handleMaintenance(false);
+            }
+        }
+
+        System.out.println(simpleDateFormat.format(new Date()) + " - [" + Green + "INFO" + Reset + "] -> " + message.toString() + Reset);
+        try {
+            fileWriter.write(simpleDateFormat.format(new Date()) + " - [INFO] -> " + message.toString() + "\n");
+            fileWriter.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        if (Main.getJDA() != null) {
+            TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("log").getChannelId());
+            textChannel.sendMessage(embedBuilder.build()).queue();
         }
     }
 

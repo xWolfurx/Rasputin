@@ -1,14 +1,14 @@
 package net.wolfur.rasputin.util;
 
-import net.dv8tion.jda.api.entities.Activity;
-import net.dv8tion.jda.api.entities.Emote;
-import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.entities.Role;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.*;
 import net.wolfur.rasputin.Main;
 
+import java.awt.*;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class Utils {
@@ -70,6 +70,26 @@ public class Utils {
         return null;
     }
 
+    public static void handleMaintenance(boolean active) {
+        if(active) {
+            if(!Main.isMaintenance()) {
+                Main.setMaintenance(true);
+                TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("talk").getChannelId());
+                if(textChannel != null) {
+                    textChannel.sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bungie.net has been brought offline for maintenance." + "\n" + "Commands are disabled.").build()).complete();
+                }
+            }
+        } else {
+            if(Main.isMaintenance()) {
+                Main.setMaintenance(false);
+                Main.getCoreManager().getBungieUserManager().checkUsers();
+                TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("talk").getChannelId());
+                if(textChannel != null) {
+                    textChannel.sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bungie.net maintenance is completed." + "\n" + "Commands were reactivated.").build()).complete();
+                }
+            }
+        }
+    }
     public static final Consumer<Throwable> ignore = ignored -> {
 
     };

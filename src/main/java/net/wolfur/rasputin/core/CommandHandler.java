@@ -16,7 +16,10 @@ public class CommandHandler {
             commandContainer.event.getTextChannel().sendMessage("Commands are disabled while reloading.").complete();
             return;
         }
-
+        if(Main.isMaintenance() && (!commandContainer.invoke.equalsIgnoreCase("raid") || !commandContainer.invoke.equalsIgnoreCase("maintenance"))) {
+            commandContainer.event.getTextChannel().sendMessage("Commands are disabled while Bungie.net maintenance.").complete();
+            return;
+        }
         if(CommandHandler.commands.containsKey(commandContainer.invoke)) {
             CommandPermission commandPermission = Main.getFileManager().getPermissionFile().getCommandPermission(CommandHandler.commands.get(commandContainer.invoke));
             if(commandPermission.hasPermission(commandContainer.event.getMember())) {

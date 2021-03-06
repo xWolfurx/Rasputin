@@ -109,7 +109,8 @@ public class BungieUser extends DatabaseUpdate {
                 BungieUser.this.clanUser = new ClanUser(BungieUser.this);
                 BungieUser.this.startRefreshTimer();
                 BungieUser.this.requestDestinyProfile();
-                BungieUser.this.initializeBungieUser();
+                BungieUser.this.requestHistoricalStats();
+                //Todo: Fix out of memory -> BungieUser.this.initializeBungieUser();
             }
         });
     }
@@ -293,7 +294,7 @@ public class BungieUser extends DatabaseUpdate {
             Logger.info("Response Code: " + responseCode, false);
 
             if(responseCode != 200) {
-                Logger.error("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", true);
+                Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
                 return;
             }
 
@@ -342,7 +343,7 @@ public class BungieUser extends DatabaseUpdate {
             Logger.info("MembershipType: " + MembershipType.BUNGIE_NEXT.name(), false);
 
             if(responseCode != 200) {
-                Logger.error("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", true);
+                Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
                 return;
             }
 
@@ -406,7 +407,7 @@ public class BungieUser extends DatabaseUpdate {
             Logger.info("Response Code: " + responseCode, false);
 
             if(responseCode != 200) {
-                Logger.error("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", true);
+                Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
                 return;
             }
 
@@ -446,7 +447,7 @@ public class BungieUser extends DatabaseUpdate {
             Logger.info("DestinyDefinitionType: " + destinyDefinitionType.name(), false);
 
             if(responseCode != 200) {
-                Logger.error("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", true);
+                Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
                 return;
             }
 
@@ -486,7 +487,7 @@ public class BungieUser extends DatabaseUpdate {
             Logger.info("Component-Type: " + componentType.getBetterName(), false);
 
             if(responseCode != 200) {
-                Logger.error("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", true);
+                Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
                 return;
             }
 
@@ -528,7 +529,7 @@ public class BungieUser extends DatabaseUpdate {
                 Logger.info("Component-Type: " + componentType.getBetterName(), false);
 
                 if (responseCode != 200) {
-                    Logger.error("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", true);
+                    Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
                     return;
                 }
 
@@ -638,7 +639,7 @@ public class BungieUser extends DatabaseUpdate {
                 int responseCode = connection.getResponseCode();
 
                 if(responseCode != 200) {
-                    Logger.error("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", true);
+                    Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
                     return;
                 }
 
@@ -656,9 +657,13 @@ public class BungieUser extends DatabaseUpdate {
                 JsonObject jsonObject = (JsonObject) parser.parse(response.toString());
 
                 JsonArray jsonArray = jsonObject.getAsJsonObject("Response").getAsJsonArray("activities");
-                for(int i = 0; i < jsonArray.size(); i++) {
-                    JsonObject historicalStatObject = jsonArray.get(i).getAsJsonObject();
-                    this.historicalStats.add(historicalStatObject);
+                try {
+                    for (int i = 0; i < jsonArray.size(); i++) {
+                        JsonObject historicalStatObject = jsonArray.get(i).getAsJsonObject();
+                        this.historicalStats.add(historicalStatObject);
+                    }
+                } catch (NullPointerException e) {
+                    Logger.warning("No historical data received for " + this.getUser().getName() + ". (Character: " + ClassType.getClassById(destinyCharacter.getClassType()).getBetterName() + ")", false);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -690,7 +695,7 @@ public class BungieUser extends DatabaseUpdate {
                     int responseCode = connection.getResponseCode();
 
                     if(responseCode != 200) {
-                        Logger.error("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", true);
+                        Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
                         return;
                     }
 
@@ -754,7 +759,7 @@ public class BungieUser extends DatabaseUpdate {
             Logger.info("Component-Type: " + componentType.getBetterName(), false);
 
             if(responseCode != 200) {
-                Logger.error("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", true);
+                Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
                 return;
             }
 
@@ -796,7 +801,7 @@ public class BungieUser extends DatabaseUpdate {
             Logger.info("Response Code: " + responseCode, false);
 
             if(responseCode != 200) {
-                Logger.error("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", true);
+                Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
                 return null;
             }
 
@@ -872,7 +877,7 @@ public class BungieUser extends DatabaseUpdate {
             Logger.info("Response Code: " + responseCode, false);
 
             if(responseCode != 200) {
-                Logger.error("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", true);
+                Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
                 return;
             }
 
@@ -949,7 +954,7 @@ public class BungieUser extends DatabaseUpdate {
         return this.milestonesObject;
     }
 
-    private void startRefreshTimer() {
+    public void startRefreshTimer() {
         long delay = this.getExpires() - System.currentTimeMillis();
         if(delay <= 0L) {
             Logger.warning("Access token expired for user " + this.getUser().getName() + ".", false);

@@ -2,6 +2,7 @@ package net.wolfur.rasputin.other;
 
 public enum RoleType {
 
+    MEMBER,
     VERIFIED,
     VENDOR_NOTIFY;
 

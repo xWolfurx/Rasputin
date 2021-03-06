@@ -511,6 +511,17 @@ public class Raid {
         return embedBuilder;
     }
 
+    public EmbedBuilder removedFromRaid() {
+        EmbedBuilder embedBuilder = new EmbedBuilder()
+                .setColor(Color.RED)
+                .setTitle("Removed from activity: " + this.getRaidType().getBetterName())
+                .setDescription("**Du wurdest aus der Raid-Planung '" + this.getRaidType().getBetterName() + "' am " + new SimpleDateFormat("dd.MM.yyyy").format(this.getDate()) + " entfernt.**" + "\n" + "\n" +
+                        "**Grund:** Raidsperre erhalten")
+                .setThumbnail(this.getRaidType().getIconURL());
+
+        return embedBuilder;
+    }
+
     private EmbedBuilder getAlertEmbed() {
         StringBuilder sb = new StringBuilder().append(Raid.this.getLeader().getName()).append(", ");
         for (User users : Raid.this.getRunners()) {

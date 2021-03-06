@@ -44,7 +44,6 @@ public class Command_Ranking implements Command {
                     bungieUser.requestProfile(ComponentType.METRICS);
                     event.getTextChannel().sendMessage(this.createCrucibleEmbedBuilder(bungieUser, "Infamy Points", "250859887", "1963785799").build()).complete();
                 } else if(args[0].equalsIgnoreCase("tower")) {
-                    bungieUser.requestProfile(ComponentType.METRICS);
                     event.getTextChannel().sendMessage(this.createTowerEmbedBuilder(bungieUser).build()).complete();
                 } else {
                     event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser Typ existiert nicht. \n\nBitte verwende **.help ranking** um dir die möglichen Typen aufzulisten.").build()).queue(message -> {

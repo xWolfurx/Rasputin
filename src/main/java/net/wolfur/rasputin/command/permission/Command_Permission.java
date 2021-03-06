@@ -22,9 +22,7 @@ public class Command_Permission implements Command {
         if(CommandHandler.commands.containsKey(commandName)) {
             Command command = CommandHandler.commands.get(commandName);
             CommandPermission commandPermission = Main.getFileManager().getPermissionFile().getCommandPermission(command);
-            if(args.length == 2) {
-
-            } else if(args.length == 3) {
+            if(args.length == 3) {
                 long id = -1;
                 try {
                     if(!args[1].equalsIgnoreCase("needPermission")) {
@@ -97,7 +95,7 @@ public class Command_Permission implements Command {
                         break;
                 }
             } else {
-                event.getTextChannel().sendMessage("Usage: .Permission <command> <addUser | removeUser | addRole | removeRole | blockUser | unblockUser> <id>").complete();
+                event.getTextChannel().sendMessage("Usage: .Permission <command> <addUser | removeUser | addRole | removeRole | blockUser | unblockUser | needPermission> <value>").complete();
             }
         } else {
             event.getTextChannel().sendMessage("The specified command does not exist").complete();

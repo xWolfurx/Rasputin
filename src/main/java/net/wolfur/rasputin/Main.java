@@ -8,7 +8,9 @@ import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.wolfur.rasputin.command.*;
+import net.wolfur.rasputin.command.administration.Command_Maintenance;
 import net.wolfur.rasputin.command.clan.Command_Clan;
+import net.wolfur.rasputin.command.fun.Command_Clown;
 import net.wolfur.rasputin.command.fun.Command_Huen;
 import net.wolfur.rasputin.command.moderation.Command_Ping;
 import net.wolfur.rasputin.command.notify.Command_Notify;
@@ -24,6 +26,7 @@ import net.wolfur.rasputin.command.vendor.Command_Xur;
 import net.wolfur.rasputin.core.CommandHandler;
 import net.wolfur.rasputin.database.SQLManager;
 import net.wolfur.rasputin.file.builder.yaml.FileConfiguration;
+import net.wolfur.rasputin.listeners.Event_GuildMemberRoleAddEvent;
 import net.wolfur.rasputin.listeners.Event_GuildMessageReactionAddEvent;
 import net.wolfur.rasputin.listeners.Event_MessageReceivedEvent;
 import net.wolfur.rasputin.manager.CoreManager;
@@ -54,6 +57,8 @@ public class Main {
 
     private static ReloadTask reloadTask;
     private static VendorNotificationTask vendorNotificationTask;
+
+    private static boolean maintenance = false;
 
     public static void main(String[] args) {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
@@ -128,9 +133,9 @@ public class Main {
 
         Main.builder = JDABuilder.createDefault(Main.getFileManager().getConfigFile().getToken());
         Main.builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
+        Main.builder.setRawEventsEnabled(true);
         Main.builder.setAutoReconnect(true);
         Main.builder.setStatus(OnlineStatus.ONLINE);
-        Main.builder.enableIntents(GatewayIntent.GUILD_MEMBERS);
         Main.builder.setActivity(Activity.playing("REBOOTING SYSTEM..."));
 
         Main.loadEvents();
@@ -196,12 +201,14 @@ public class Main {
     private static void loadEvents() {
         Main.builder.addEventListeners(new Event_MessageReceivedEvent());
         Main.builder.addEventListeners(new Event_GuildMessageReactionAddEvent());
+        Main.builder.addEventListeners(new Event_GuildMemberRoleAddEvent());
     }
 
     private static int loadCommands() {
         //BUNGIE COMMANDS
 
         //ADMINISTRATION
+        CommandHandler.commands.put("maintenance", new Command_Maintenance());
         CommandHandler.commands.put("permission", new Command_Permission());
 
         //MODERATION
@@ -233,6 +240,7 @@ public class Main {
         CommandHandler.commands.put("throne", new Command_Throne());
         CommandHandler.commands.put("ranking", new Command_Ranking());
         CommandHandler.commands.put("status", new Command_Status());
+        CommandHandler.commands.put("current", new Command_Current());
 
         CommandHandler.commands.put("clan", new Command_Clan());
 
@@ -241,6 +249,7 @@ public class Main {
         CommandHandler.commands.put("notify", new Command_Notify());
 
         CommandHandler.commands.put("huen", new Command_Huen());
+        CommandHandler.commands.put("clown", new Command_Clown());
 
         return CommandHandler.commands.size();
     }
@@ -279,6 +288,14 @@ public class Main {
 
     public static long getStartTime() {
         return Main.startTime;
+    }
+
+    public static boolean isMaintenance() {
+        return Main.maintenance;
+    }
+
+    public static void setMaintenance(boolean maintenance) {
+        Main.maintenance = maintenance;
     }
 
 }
