@@ -107,7 +107,7 @@ public class Logger {
             e.printStackTrace();
         }
         if (Main.getJDA() != null) {
-            TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("log").getChannelId());
+            TextChannel textChannel = Main.getGuild().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("error").getChannelId());
             textChannel.sendMessage(embedBuilder.build()).queue();
         }
     }

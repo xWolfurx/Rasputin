@@ -62,6 +62,9 @@ public class BungieUser extends DatabaseUpdate {
     private Map<ComponentType, JsonObject> profileData;
     private Map<ComponentType, Map<DestinyCharacter, JsonObject>> characterData;
     private Map<VendorType, Map<ComponentType, JsonObject>> vendorData;
+
+    private Map<String, String> manifestPaths;
+
     private Map<DestinyDefinitionType, JsonObject> manifests;
 
     private Map<Long, JsonObject> triumphs;
@@ -96,6 +99,8 @@ public class BungieUser extends DatabaseUpdate {
         this.characterData = new HashMap<>();
         this.vendorData = new HashMap<>();
         this.manifests = new HashMap<>();
+
+        this.manifestPaths = new HashMap<>();
 
         this.triumphs = new HashMap<>();
         this.loadDataAsync();

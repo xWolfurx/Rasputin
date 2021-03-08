@@ -9,6 +9,7 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.wolfur.rasputin.command.*;
 import net.wolfur.rasputin.command.administration.Command_Maintenance;
+import net.wolfur.rasputin.command.administration.Command_Update;
 import net.wolfur.rasputin.command.clan.Command_Clan;
 import net.wolfur.rasputin.command.fun.Command_Clown;
 import net.wolfur.rasputin.command.fun.Command_Huen;
@@ -210,6 +211,7 @@ public class Main {
         //ADMINISTRATION
         CommandHandler.commands.put("maintenance", new Command_Maintenance());
         CommandHandler.commands.put("permission", new Command_Permission());
+        CommandHandler.commands.put("update", new Command_Update());
 
         //MODERATION
         CommandHandler.commands.put("ping", new Command_Ping());
