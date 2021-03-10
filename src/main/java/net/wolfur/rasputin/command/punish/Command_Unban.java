@@ -23,7 +23,19 @@ public class Command_Unban implements Command {
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
         if (args.length == 1) {
-            User target = User.fromId(args[0].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", ""));
+
+            long id = -1;
+            try {
+                id = Long.parseLong(args[0]);
+                if(id <= 0) throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte gebe eine gültige Id ein.").build()).queue(message -> {
+                    message.delete().queueAfter(15, TimeUnit.SECONDS);
+                });
+                return;
+            }
+
+            User target = Main.getJDA().retrieveUserById(id).complete();
             if (target != null) {
                 Main.getCoreManager().getBanManager().isPlayerBannedAsync(target.getId(), new Callback<Boolean>() {
                         @Override
@@ -37,7 +49,7 @@ public class Command_Unban implements Command {
                                     @Override
                                     public void accept(Boolean success) {
                                         if (success.booleanValue()) {
-                                            TextChannel banHistory = Main.getJDA().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("banHistory").getChannelId());
+                                            TextChannel banHistory = Main.getJDA().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("ban_history").getChannelId());
                                             if(banHistory != null) {
                                                 banHistory.sendMessage(new EmbedBuilder().setColor(Color.CYAN).setDescription("Der User '" + target.getAsMention() + "' wurde entsperrt.").build()).queue();
                                             } else {
@@ -57,7 +69,7 @@ public class Command_Unban implements Command {
                     });
                 }
             } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Unban <Spieler>").build()).queue(message -> {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .Unban <Id>").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);
             });
         }

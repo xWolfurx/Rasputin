@@ -23,7 +23,19 @@ public class Command_BanInfo implements Command {
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
         if (args.length == 1) {
-            User target = User.fromId(args[0].replaceAll("@", "").replaceAll("!", "").replaceAll("<", "").replaceAll(">", ""));
+
+            long id = -1;
+            try {
+                id = Long.parseLong(args[0]);
+                if(id <= 0) throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte gebe eine gültige Id ein.").build()).queue(message -> {
+                    message.delete().queueAfter(15, TimeUnit.SECONDS);
+                });
+                return;
+            }
+
+            User target = Main.getJDA().retrieveUserById(id).complete();
             if (target != null) {
                 Main.getCoreManager().getBanManager().getBanInformationAsync(target.getId(), new Callback<BanInformation>() {
                     @Override
@@ -48,7 +60,7 @@ public class Command_BanInfo implements Command {
                 });
             }
         } else {
-            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .BanInfo <User>").build()).queue(message -> {
+            event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Verwendung: .BanInfo <Id>").build()).queue(message -> {
                 message.delete().queueAfter(15, TimeUnit.SECONDS);
             });
         }

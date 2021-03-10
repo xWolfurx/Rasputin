@@ -18,11 +18,12 @@ public class Command_Permission implements Command {
     }
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
+        if(args.length == 3) {
         String commandName = args[0];
-        if(CommandHandler.commands.containsKey(commandName)) {
-            Command command = CommandHandler.commands.get(commandName);
-            CommandPermission commandPermission = Main.getFileManager().getPermissionFile().getCommandPermission(command);
-            if(args.length == 3) {
+            if(CommandHandler.commands.containsKey(commandName)) {
+                Command command = CommandHandler.commands.get(commandName);
+                CommandPermission commandPermission = Main.getFileManager().getPermissionFile().getCommandPermission(command);
+
                 long id = -1;
                 try {
                     if(!args[1].equalsIgnoreCase("needPermission")) {
@@ -94,11 +95,11 @@ public class Command_Permission implements Command {
                         event.getTextChannel().sendMessage("Unknown argument").complete();
                         break;
                 }
-            } else {
-                event.getTextChannel().sendMessage("Usage: .Permission <command> <addUser | removeUser | addRole | removeRole | blockUser | unblockUser | needPermission> <value>").complete();
-            }
         } else {
             event.getTextChannel().sendMessage("The specified command does not exist").complete();
+        }
+        } else {
+            event.getTextChannel().sendMessage("Usage: .Permission <command> <addUser | removeUser | addRole | removeRole | blockUser | unblockUser | needPermission> <value>").complete();
         }
     }
 

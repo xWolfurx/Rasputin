@@ -28,7 +28,7 @@ public class Command_Tempban implements Command {
         if (args.length >= 2) {
             long id = -1;
             try {
-                id = Long.parseLong(args[2]);
+                id = Long.parseLong(args[0]);
                 if(id <= 0) throw new NumberFormatException();
             } catch (NumberFormatException e) {
                 event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Bitte gebe eine gültige Id ein.").build()).queue(message -> {
@@ -76,7 +76,7 @@ public class Command_Tempban implements Command {
                                                 }
                                             }
 
-                                            TextChannel banHistory = Main.getJDA().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("banHistory").getChannelId());
+                                            TextChannel banHistory = Main.getJDA().getTextChannelById(Main.getFileManager().getChannelFile().getChannel("ban_history").getChannelId());
                                             if (banHistory != null) {
                                                 banHistory.sendMessage(new EmbedBuilder().setColor(Color.CYAN).setDescription("Der User '" + target.getAsMention() + "' wurde gesperrt." + "\n" + "Grund: " + reason + "\n" + "Dauer: " + TimeUtil.timeToString(banTime, true)).build()).queue();
                                             } else {
