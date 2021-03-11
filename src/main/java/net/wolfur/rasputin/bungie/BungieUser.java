@@ -903,6 +903,43 @@ public class BungieUser extends DatabaseUpdate {
         }
     }
 
+    public JsonObject requestItem(long itemInstanceId) {
+        try {
+            String url = "https://www.bungie.net/platform/destiny2/" + this.getDestinyMembershipType().getId() + "/profile/" + this.getDestinyMembershipId() + "/item/" + itemInstanceId + "/?components=" + ComponentType.ITEM_INSTANCES.getComponentId();
+
+            URL obj = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("X-API-KEY", Main.getFileManager().getConfigFile().getAPIKey());
+
+            int responseCode = connection.getResponseCode();
+            Logger.info("Sending 'GET' request to Bungie.net: " + url, false);
+            Logger.info("Response Code: " + responseCode, false);
+
+            if(responseCode != 200) {
+                Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
+                return null;
+            }
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+
+            in.close();
+
+            JsonParser parser = new JsonParser();
+            return (JsonObject) parser.parse(response.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public User getUser() {
         return this.user;
     }

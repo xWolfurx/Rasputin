@@ -244,6 +244,7 @@ public class Main {
         CommandHandler.commands.put("status", new Command_Status());
         CommandHandler.commands.put("current", new Command_Current());
         CommandHandler.commands.put("fireteam", new Command_Fireteam());
+        CommandHandler.commands.put("postmaster", new Command_Postmaster());
 
         CommandHandler.commands.put("clan", new Command_Clan());
 

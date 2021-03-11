@@ -54,6 +54,8 @@ public class Command_Help implements Command {
             sb.append(" - .Ranking <Type> » Clan-Internes Ranking.").append("\n");
             sb.append(" - .Fireteam [@Spieler] » Zeigt den aktuellen Einsatztrupp an.").append("\n");
             sb.append(" - .Current [@Spieler] » Zeigt die aktuelle Aktivität an.").append("\n");
+            sb.append("**Inventory:**").append("\n");
+            sb.append(this.commandWithPermission("postmaster", member, " - .Postmaster [@Player | collect] » Zeigt Items in der Post an.")).append("\n");
             sb.append("**Clan:**").append("\n");
             sb.append(" - .Clan » Statistiken über den aktuellen Clan.").append("\n");
             sb.append("**Administration:**").append("\n");
