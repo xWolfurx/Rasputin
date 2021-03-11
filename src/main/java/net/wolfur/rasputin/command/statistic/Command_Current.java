@@ -28,6 +28,7 @@ public class Command_Current implements Command {
         BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
         if (bungieUser.isRegistered()) {
             if (args.length == 0) {
+                bungieUser.requestProfile(ComponentType.CHARACTER_ACTIVITIES);
                 JsonObject characterActivities = bungieUser.getProfile(ComponentType.CHARACTER_ACTIVITIES);
                 DestinyCharacter lastPlayedDestinyCharacter = null;
                 for(DestinyCharacter destinyCharacter : bungieUser.getDestinyCharacters()) {
@@ -51,6 +52,7 @@ public class Command_Current implements Command {
                 if (targetUser != null) {
                     BungieUser targetBungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(targetUser);
                     if(targetBungieUser.isRegistered()) {
+                        targetBungieUser.requestProfile(ComponentType.CHARACTER_ACTIVITIES);
                         JsonObject characterActivities = targetBungieUser.getProfile(ComponentType.CHARACTER_ACTIVITIES);
                         DestinyCharacter lastPlayedDestinyCharacter = null;
                         for(DestinyCharacter destinyCharacter : targetBungieUser.getDestinyCharacters()) {

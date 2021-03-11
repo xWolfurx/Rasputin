@@ -32,6 +32,7 @@ public class Command_Fireteam implements Command {
         BungieUser bungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(event.getAuthor());
         if (bungieUser.isRegistered()) {
             if(args.length == 0) {
+                bungieUser.requestProfile(ComponentType.TRANSITORY);
                 JsonObject fireteam = bungieUser.getProfile(ComponentType.TRANSITORY);
 
                 if(fireteam.getAsJsonObject("Response").getAsJsonObject("profileTransitoryData").getAsJsonObject("data") == null) {
@@ -45,6 +46,7 @@ public class Command_Fireteam implements Command {
                 if (targetUser != null) {
                     BungieUser targetBungieUser = Main.getCoreManager().getBungieUserManager().getBungieUser(targetUser);
                     if(targetBungieUser.isRegistered()) {
+                        targetBungieUser.requestProfile(ComponentType.TRANSITORY);
                         JsonObject fireteam = targetBungieUser.getProfile(ComponentType.TRANSITORY);
 
                         if(fireteam.getAsJsonObject("Response").getAsJsonObject("profileTransitoryData").getAsJsonObject("data") == null) {

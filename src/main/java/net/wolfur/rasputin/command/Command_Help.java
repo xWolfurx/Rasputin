@@ -1,14 +1,14 @@
 package net.wolfur.rasputin.command;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.wolfur.rasputin.Main;
 import net.wolfur.rasputin.core.Command;
-import net.wolfur.rasputin.util.Logger;
-import net.wolfur.rasputin.util.Utils;
+import net.wolfur.rasputin.core.CommandHandler;
+import net.wolfur.rasputin.permission.CommandPermission;
 
 import java.awt.*;
-import java.util.concurrent.TimeUnit;
 
 public class Command_Help implements Command {
 
@@ -20,9 +20,9 @@ public class Command_Help implements Command {
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
         if(args.length == 0) {
-            event.getTextChannel().sendMessage(this.getEmbedBuilder("general").build()).queue();
+            event.getTextChannel().sendMessage(this.getEmbedBuilder("general", event.getMember()).build()).queue();
         } else {
-            event.getTextChannel().sendMessage(this.getEmbedBuilder(args[0]).build()).queue();
+            event.getTextChannel().sendMessage(this.getEmbedBuilder(args[0], event.getMember()).build()).queue();
         }
     }
 
@@ -30,7 +30,7 @@ public class Command_Help implements Command {
     public void executed(boolean success, MessageReceivedEvent event) {
     }
 
-    private EmbedBuilder getEmbedBuilder(String type) {
+    private EmbedBuilder getEmbedBuilder(String type, Member member) {
         StringBuilder sb = new StringBuilder();
 
         if(type.equalsIgnoreCase("general")) {
@@ -44,13 +44,22 @@ public class Command_Help implements Command {
             sb.append(" - .DSC [@Spieler] » Statistiken vom Deep Stone Crypt Raid.").append("\n");
             sb.append(" - .GoS [@Spieler] » Statistiken vom Garden of Salvation Raid").append("\n");
             sb.append(" - .LW [@Spieler] » Statistiken vom Last Wish Raid").append("\n");
+            sb.append(" - .Pit [@Spieler] » Statistiken von der Grube der Ketzerei.").append("\n");
+            sb.append(" - .Prophecy [@Spieler] » Statistiken vom Dungeon 'Prophezeiung'.").append("\n");
+            sb.append(" - .Throne [@Spieler] » Statistiken vom Zerbrochenen Thron.").append("\n");
             sb.append(" - .Characters [@Spieler] » Informationen über die Charaktere").append("\n");
             sb.append(" - .Trials [@Spieler] » Statistiken von Trials of Osiris").append("\n");
             sb.append(" - .Loadout [@Spieler] » Ausrüstung des zuletzt gespielten Charakter.").append("\n");
             sb.append(" - .Last <Activity> [@Spieler] » Statistiken der letzten Aktivität.").append("\n");
             sb.append(" - .Ranking <Type> » Clan-Internes Ranking.").append("\n");
+            sb.append(" - .Fireteam [@Spieler] » Zeigt den aktuellen Einsatztrupp an.").append("\n");
+            sb.append(" - .Current [@Spieler] » Zeigt die aktuelle Aktivität an.").append("\n");
             sb.append("**Clan:**").append("\n");
             sb.append(" - .Clan » Statistiken über den aktuellen Clan.").append("\n");
+            sb.append("**Administration:**").append("\n");
+            sb.append(this.commandWithPermission("ban", member, " - .Ban <Id> [Grund] » Sperrt einen Spieler.")).append("\n");
+            sb.append(this.commandWithPermission("unban", member, " - .Unban <Id> » Entsperrt einen Spieler.")).append("\n");
+            sb.append(this.commandWithPermission("tempban", member, " - .Tempban <Id> <Zeit> [Grund] » Sperrt einen Spieler temporär.")).append("\n");
         } else if(type.equalsIgnoreCase("last")) {
             sb.append("**Command: Last**").append("\n");
             sb.append(" - .Last Raid » Statistiken vom letzten Raid.").append("\n");
@@ -85,6 +94,14 @@ public class Command_Help implements Command {
         EmbedBuilder embedBuilder = new EmbedBuilder().setColor(Color.YELLOW)
                 .setDescription(sb.toString());
         return embedBuilder;
+    }
+
+    private String commandWithPermission(String command, Member member, String description) {
+        CommandPermission commandPermission = Main.getFileManager().getPermissionFile().getCommandPermission(CommandHandler.commands.get(command));
+        if(commandPermission.hasPermission(member)) {
+            return description;
+        }
+        return "";
     }
 
 }

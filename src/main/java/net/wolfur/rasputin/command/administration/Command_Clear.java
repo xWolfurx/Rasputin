@@ -1,4 +1,4 @@
-package net.wolfur.rasputin.command;
+package net.wolfur.rasputin.command.administration;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
