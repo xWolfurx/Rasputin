@@ -112,6 +112,16 @@ public class Command_Current implements Command {
             return embedBuilder;
         }
 
+        if(currentActivityHash == 3737830648L) {
+            EmbedBuilder embedBuilder = new EmbedBuilder()
+                    .setColor(Color.MAGENTA)
+                    .setTitle("Activities > Current Activity: " + targetUser.getUser().getName())
+                    .setDescription("**" + targetUser.getUser().getName() + "** is at **Tower**.")
+                    .setFooter( "In Orbit | " + new SimpleDateFormat("dd.MM.yyyy HH:mm").format(new Date()), Main.getJDA().getSelfUser().getAvatarUrl());
+
+            return embedBuilder;
+        }
+
         String activityModeName = destinyActivityModeDefinition.getAsJsonObject(String.valueOf(currentActivityModeHash)).getAsJsonObject("displayProperties").get("name").getAsString();
         String activityName = destinyActivityDefinition.getAsJsonObject(String.valueOf(currentActivityHash)).getAsJsonObject("displayProperties").get("name").getAsString();
         String iconUrl = destinyActivityDefinition.getAsJsonObject(String.valueOf(currentActivityHash)).get("pgcrImage").getAsString();

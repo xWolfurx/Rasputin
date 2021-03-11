@@ -49,14 +49,10 @@ public class Command_Status implements Command {
                 .setDescription(Main.getReloadTask().isReloading() ? "My functions are restricted, Guardian." : "I am fully operational, Guardian")
                 .setThumbnail("http://vhost106.dein-gameserver.tech/rasputin-icon.png")
                 .addField("Current version protocol", "Rasputin v" + Main.getVersion(), true)
-                .addField("Runtime", TimeUtil.timeToString((System.currentTimeMillis() - Main.getStartTime()), false), true);
+                .addField("Runtime", TimeUtil.timeToString((System.currentTimeMillis() - Main.getStartTime()), false), true)
+                .addField("Registered users", String.valueOf(Main.getCoreManager().getBungieUserManager().getBungieUsers().values().stream().filter(bungieUser -> bungieUser.isRegistered()).count()), true);
 
         return embedBuilder;
-    }
-
-    private double round(double value, int decimalPoints) {
-        double d = Math.pow(10, decimalPoints);
-        return Math.round(value * d) / d;
     }
 
 }
