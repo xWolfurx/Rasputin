@@ -138,7 +138,7 @@ public class Command_Postmaster implements Command {
 
             if(lostItems.size() <= 0) {
                 embedBuilder.addField(i + ". " + Utils.getEmote(Main.getFileManager().getEmoteDefinitionFile().getClassType(classType)).getAsMention() + " " + ClassType.getClassById(destinyCharacter.getClassType()).getBetterName() + ":", " » Keine Items",true);
-                break;
+                continue;
             }
 
             for(DestinyItem lostItem : lostItems) {
