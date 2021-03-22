@@ -23,6 +23,11 @@ public class Command_Update implements Command {
                 event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.YELLOW).setDescription("Importing raids from database." + "\n" + "Please wait...").build()).complete();
                 Main.getCoreManager().getRaidManager().resetRaidManager();
                 event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.GREEN).setDescription("Update successfully. (" + (System.currentTimeMillis() - startTime) + " ms)").build()).complete();
+            } else if(args[0].equalsIgnoreCase("Weapons")) {
+                long startTime = System.currentTimeMillis();
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.YELLOW).setDescription("Importing weapons from database." + "\n" + "Please wait...").build()).complete();
+                Main.getWeaponManager().reloadWeapons();
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.GREEN).setDescription("Update successfully. (" + (System.currentTimeMillis() - startTime) + " ms)").build()).complete();
             } else {
                 event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser Typ existiert nicht. \n\nBitte verwende **.help update** um dir die möglichen Typen aufzulisten.").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);

@@ -92,7 +92,7 @@ public class VendorNotificationTask implements Runnable {
 
         bungieUser.requestVendor(VendorType.BANSHEE_44, ComponentType.VENDOR_SALES);
         bungieUser.requestVendor(VendorType.SPIDER, ComponentType.VENDOR_SALES);
-        bungieUser.requestVendor(VendorType.XUR, ComponentType.VENDOR_SALES);
+        /**bungieUser.requestVendor(VendorType.XUR, ComponentType.VENDOR_SALES);
 
         String xurLocation = bungieUser.requestXurLocation();
         JsonObject xurObject = bungieUser.getVendor(VendorType.XUR, ComponentType.VENDOR_SALES);
@@ -102,7 +102,7 @@ public class VendorNotificationTask implements Runnable {
             if(!xurInformation.isActive()){
                 textChannel.sendMessage(this.createXurEmbedBuilder(bungieUser, xurInformation, xurLocation).build()).complete();
             }
-        }
+        }**/
 
         JsonObject spiderObject = bungieUser.getVendor(VendorType.SPIDER, ComponentType.VENDOR_SALES);
 

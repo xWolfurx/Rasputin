@@ -16,15 +16,12 @@ public class Event_GuildMemberRoleAddEvent extends ListenerAdapter {
 
     @Override
     public void onGuildMemberRoleAdd(GuildMemberRoleAddEvent event) {
-        System.out.println("Triggered Role Add Event");
         if(event.getMember().getUser().isBot()) return;
 
         User user = event.getMember().getUser();
         List<Role> addedRoles = event.getRoles();
 
-        System.out.println("Added Roles for " + user.getName() + ": " + addedRoles.toString());
-
-        if(!addedRoles.contains(Main.getFileManager().getRoleDefinitionFile().getRoleId(RoleType.MEMBER))) {
+        if(!addedRoles.contains(Main.getGuild().getRoleById(Main.getFileManager().getRoleDefinitionFile().getRoleId(RoleType.MEMBER)))) {
             return;
         }
 

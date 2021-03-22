@@ -17,7 +17,7 @@ import java.util.Date;
 public class Event_MessageReceivedEvent extends ListenerAdapter {
 
     public void onMessageReceived(MessageReceivedEvent event) {
-        if(event.getMessage().getContentRaw().startsWith(Variables.PREFIX) && event.getMessage().getAuthor().getId() != event.getJDA().getSelfUser().getId()) {
+        if(event.getMessage().getContentRaw().startsWith(Variables.PREFIX) && event.isFromType(ChannelType.TEXT) && event.getMessage().getAuthor().getId() != event.getJDA().getSelfUser().getId()) {
             if(Main.getFileManager().getChannelFile().getChannel(event.getTextChannel().getIdLong()) != null && Main.getFileManager().getChannelFile().getChannel(event.getTextChannel().getIdLong()).isCommandChannel())
                 CommandHandler.handleCommand(CommandHandler.parser.parser(event.getMessage().getContentRaw(), event));
                 return;

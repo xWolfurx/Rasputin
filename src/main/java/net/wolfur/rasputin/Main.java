@@ -5,6 +5,9 @@ import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.OnlineStatus;
 import net.dv8tion.jda.api.entities.Activity;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.requests.GatewayIntent;
+import net.dv8tion.jda.api.utils.ChunkingFilter;
+import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import net.dv8tion.jda.api.utils.cache.CacheFlag;
 import net.wolfur.rasputin.command.*;
 import net.wolfur.rasputin.command.administration.Command_Clear;
@@ -24,17 +27,17 @@ import net.wolfur.rasputin.command.statistic.*;
 import net.wolfur.rasputin.command.vendor.Command_Gunsmith;
 import net.wolfur.rasputin.command.vendor.Command_Spider;
 import net.wolfur.rasputin.command.vendor.Command_Xur;
+import net.wolfur.rasputin.command.weapon.Command_GodRoll;
 import net.wolfur.rasputin.core.CommandHandler;
 import net.wolfur.rasputin.database.SQLManager;
 import net.wolfur.rasputin.file.builder.yaml.FileConfiguration;
-import net.wolfur.rasputin.listeners.Event_GuildMemberRoleAddEvent;
-import net.wolfur.rasputin.listeners.Event_GuildMessageReactionAddEvent;
-import net.wolfur.rasputin.listeners.Event_MessageReceivedEvent;
+import net.wolfur.rasputin.listeners.*;
 import net.wolfur.rasputin.manager.CoreManager;
 import net.wolfur.rasputin.manager.FileManager;
 import net.wolfur.rasputin.task.ReloadTask;
 import net.wolfur.rasputin.task.VendorNotificationTask;
 import net.wolfur.rasputin.util.Logger;
+import net.wolfur.rasputin.weapon.WeaponManager;
 import net.wolfur.rasputin.web.WebServer;
 
 import javax.security.auth.login.LoginException;
@@ -55,6 +58,8 @@ public class Main {
     private static FileManager fileManager;
     private static SQLManager sqlManager;
     private static CoreManager coreManager;
+
+    private static WeaponManager weaponManager;
 
     private static ReloadTask reloadTask;
     private static VendorNotificationTask vendorNotificationTask;
@@ -133,11 +138,14 @@ public class Main {
         }
 
         Main.builder = JDABuilder.createDefault(Main.getFileManager().getConfigFile().getToken());
-        Main.builder.disableCache(CacheFlag.MEMBER_OVERRIDES, CacheFlag.VOICE_STATE);
-        Main.builder.setRawEventsEnabled(true);
-        Main.builder.setAutoReconnect(true);
-        Main.builder.setStatus(OnlineStatus.ONLINE);
-        Main.builder.setActivity(Activity.playing("REBOOTING SYSTEM..."));
+        Main.builder.setMemberCachePolicy(MemberCachePolicy.ALL)
+                    .setChunkingFilter(ChunkingFilter.NONE)
+                    .disableCache(EnumSet.of(CacheFlag.ACTIVITY, CacheFlag.EMOTE, CacheFlag.CLIENT_STATUS))
+                    .enableIntents(GatewayIntent.GUILD_MEMBERS, GatewayIntent.GUILD_PRESENCES)
+                    .setRawEventsEnabled(true)
+                    .setAutoReconnect(true)
+                    .setStatus(OnlineStatus.ONLINE)
+                    .setActivity(Activity.playing("REBOOTING SYSTEM..."));
 
         Main.loadEvents();
 
@@ -166,6 +174,8 @@ public class Main {
         }
 
         Main.coreManager = new CoreManager();
+
+        Main.weaponManager = new WeaponManager();
 
         Main.reloadTask = new ReloadTask();
         Main.reloadTask.start();
@@ -202,12 +212,12 @@ public class Main {
     private static void loadEvents() {
         Main.builder.addEventListeners(new Event_MessageReceivedEvent());
         Main.builder.addEventListeners(new Event_GuildMessageReactionAddEvent());
+        Main.builder.addEventListeners(new Event_GuildMemberJoinEvent());
+        Main.builder.addEventListeners(new Event_GuildMemberRemoveEvent());
         Main.builder.addEventListeners(new Event_GuildMemberRoleAddEvent());
     }
 
     private static int loadCommands() {
-        //BUNGIE COMMANDS
-
         //ADMINISTRATION
         CommandHandler.commands.put("maintenance", new Command_Maintenance());
         CommandHandler.commands.put("permission", new Command_Permission());
@@ -246,6 +256,7 @@ public class Main {
         CommandHandler.commands.put("fireteam", new Command_Fireteam());
         CommandHandler.commands.put("postmaster", new Command_Postmaster());
         CommandHandler.commands.put("online", new Command_Online());
+        CommandHandler.commands.put("godroll", new Command_GodRoll());
 
         CommandHandler.commands.put("clan", new Command_Clan());
 
@@ -281,6 +292,10 @@ public class Main {
 
     public static CoreManager getCoreManager() {
         return Main.coreManager;
+    }
+
+    public static WeaponManager getWeaponManager() {
+        return Main.weaponManager;
     }
 
     public static ReloadTask getReloadTask() {

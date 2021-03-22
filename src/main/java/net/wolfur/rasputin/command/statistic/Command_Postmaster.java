@@ -150,7 +150,7 @@ public class Command_Postmaster implements Command {
                 JsonObject additionalItemData = itemInstanceData != null ? itemInstanceData.getAsJsonObject("Response").getAsJsonObject("instance").getAsJsonObject("data") : null;
 
                 String power = additionalItemData != null ? "\n" + "(Power: " + String.valueOf(additionalItemData.get("itemLevel").getAsInt()) + String.valueOf(additionalItemData.get("quality").getAsInt()) + ")" : "";
-                fieldDescription.append(" » " + lostItem.getQuantity() + "x " + lostItem.getItemName(targetUser.getManifest(DestinyDefinitionType.DESTINY_INVENTORY_ITEM_DEFINITION))).append(" " + power).append("\n");
+                fieldDescription.append(" » " + lostItem.getQuantity() + "x " + lostItem.getItemName(targetUser.getManifest(DestinyDefinitionType.DESTINY_INVENTORY_ITEM_LITE_DEFINITION))).append(" " + power).append("\n");
             }
 
             embedBuilder.addField(i + ". " + Utils.getEmote(Main.getFileManager().getEmoteDefinitionFile().getClassType(classType)).getAsMention() + " " + ClassType.getClassById(destinyCharacter.getClassType()).getBetterName() + ":", fieldDescription.toString(),true);
