@@ -141,6 +141,12 @@ public class Command_Postmaster implements Command {
                 continue;
             }
 
+            if(lostItems.size() <= 15) {
+                fieldDescription.append(lostItems.size() + "/" + "20" + " Items").append("\n\n");
+            } else if(lostItems.size() > 15) {
+                fieldDescription.append("**" + lostItems.size() + "/" + "20" + " Items" + "**").append("\n\n");
+            }
+
             for(DestinyItem lostItem : lostItems) {
                 JsonObject itemInstanceData = null;
                 if(lostItem.getItemInstanceId() != -1L) {

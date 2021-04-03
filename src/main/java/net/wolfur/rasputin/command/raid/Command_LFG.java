@@ -5,8 +5,8 @@ import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.wolfur.rasputin.Main;
 import net.wolfur.rasputin.core.Command;
 import net.wolfur.rasputin.database.Callback;
-import net.wolfur.rasputin.punish.BanInformation;
 import net.wolfur.rasputin.other.RaidType;
+import net.wolfur.rasputin.punish.BanInformation;
 import net.wolfur.rasputin.util.Logger;
 import net.wolfur.rasputin.util.TimeUtil;
 
@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-public class Command_Raid implements Command {
+public class Command_LFG implements Command {
 
     @Override
     public boolean called(String[] args, MessageReceivedEvent event) {
@@ -25,7 +25,7 @@ public class Command_Raid implements Command {
 
     @Override
     public void action(String[] args, MessageReceivedEvent event) {
-        if (event.getTextChannel().getIdLong() == Main.getFileManager().getChannelFile().getChannel("raid").getChannelId()) {
+        if (event.getTextChannel().getIdLong() == Main.getFileManager().getChannelFile().getChannel("lfg").getChannelId()) {
             event.getMessage().delete().queueAfter(15, TimeUnit.SECONDS);
             if (args.length >= 3) {
                 RaidType raidType = Main.getCoreManager().getRaidManager().getRaidType(args[0]);
@@ -76,7 +76,7 @@ public class Command_Raid implements Command {
                             }
 
                             if(diff < TimeUnit.MINUTES.toMillis(30)) {
-                                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der Raid muss mindestens 30 Minuten im Voraus erstellt werden.").build()).queue(message -> {
+                                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Die Aktivität muss mindestens 30 Minuten im Voraus erstellt werden.").build()).queue(message -> {
                                     message.delete().queueAfter(15, TimeUnit.SECONDS);
                                 });
                                 return;
@@ -96,14 +96,14 @@ public class Command_Raid implements Command {
 
                                     if (banInformation.isPermanent()) {
                                         event.getMember().getUser().openPrivateChannel().queue(channel -> {
-                                            channel.sendMessage(new EmbedBuilder().setDescription("Du kannst keinen Raid erstellen, da du gesperrt bist." + "\n" + "Grund: " + banInformation.getReason()).setColor(Color.RED).build()).queue();
+                                            channel.sendMessage(new EmbedBuilder().setDescription("Du kannst keine Aktivität erstellen, da du gesperrt bist." + "\n" + "Grund: " + banInformation.getReason()).setColor(Color.RED).build()).queue();
                                         });
                                         return;
                                     } else {
                                         long diff = banInformation.getTimestamp() + banInformation.getTimeBanInformation().getBanTime() - System.currentTimeMillis();
                                         if (diff > 0L) {
                                             event.getMember().getUser().openPrivateChannel().queue(channel -> {
-                                                channel.sendMessage(new EmbedBuilder().setDescription("Du kannst keinen Raid erstellen, da du gesperrt bist." + "\n" + "Grund: " + banInformation.getReason() + "\n" + "Dauer der Sperre: " + TimeUtil.timeToString(diff, false)).setColor(Color.RED).build()).queue();
+                                                channel.sendMessage(new EmbedBuilder().setDescription("Du kannst keine Aktivität erstellen, da du gesperrt bist." + "\n" + "Grund: " + banInformation.getReason() + "\n" + "Dauer der Sperre: " + TimeUtil.timeToString(diff, false)).setColor(Color.RED).build()).queue();
                                             });
                                             return;
                                         } else {
@@ -117,18 +117,18 @@ public class Command_Raid implements Command {
                             }
                         });
                     } else {
-                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Es trat ein Fehler beim Erstellen des Raids auf.").build()).queue(message -> {
+                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Es trat ein Fehler beim Erstellen der Aktivität auf.").build()).queue(message -> {
                             message.delete().queueAfter(15, TimeUnit.SECONDS);
                         });
-                        Logger.error("An error occurred while creating raid. (Date or time is null)", true);
+                        Logger.error("An error occurred while creating activity. (Date or time is null)", true);
                     }
                 } else {
-                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Der angegebene Raid konnte nicht gefunden werden.").build()).queue(message -> {
+                    event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Die angegebene Aktivität konnte nicht gefunden werden.").build()).queue(message -> {
                         message.delete().queueAfter(15, TimeUnit.SECONDS);
                     });
                 }
             } else {
-                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("**Verwendung:** .raid <Raidtyp> <Datum> <Uhrzeit> [Beschreibung]").build()).queue(message -> {
+                event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("**Verwendung:** .Lfg <Aktivität> <Datum> <Uhrzeit> [Beschreibung]").build()).queue(message -> {
                     message.delete().queueAfter(15, TimeUnit.SECONDS);
                 });
             }

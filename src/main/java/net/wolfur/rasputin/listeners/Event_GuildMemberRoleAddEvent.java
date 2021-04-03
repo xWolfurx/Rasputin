@@ -26,12 +26,12 @@ public class Event_GuildMemberRoleAddEvent extends ListenerAdapter {
         }
 
         EmbedBuilder embedBuilder = new EmbedBuilder().setColor(Color.GRAY)
-                .setDescription("Willkommen Hüter, mein Name ist Rasputin und ich bin die" + "\n" +
+                .setDescription("Willkommen Hüter, mein Name ist Rasputin und ich bin die" +
                         "künstliche Intelligenz dieses Clans." + "\n\n" +
-                        "Meine Aufgabe besteht darin, den Clan mit Informationen rund ums" + "\n" +
+                        "Meine Aufgabe besteht darin, den Clan mit Informationen rund ums" +
                         "Destiny 2 Universum zu versorgen." + "\n\n" +
-                        "Um dir auch Zugriff auf diese Funktionen zu gewähren, brauche ich allerdings" + "\n" +
-                        "zunächst deine Zustimmung. Bitte registriere dich mit meiner Datenbank, damit ich" + "\n" +
+                        "Um dir auch Zugriff auf diese Funktionen zu gewähren, brauche ich allerdings" +
+                        "zunächst deine Zustimmung. Bitte registriere dich mit meiner Datenbank, damit ich" +
                         "dich mit meinem kompletten Wissen unterstützen kann." + "\n\n" +
                         "Um dich zu registrieren, gehe bitte in den Channel '**" + Main.getJDA().getGuildById(Main.getFileManager().getConfigFile().getGuildId()).getTextChannelById(Main.getFileManager().getChannelFile().getChannel("talk").getChannelId()).getAsMention() + "**' und" + "\n" +
                         "führe dort den Befehl '**.Register**' aus. Folge danach meinen weiteren Anweisungen.")

@@ -1,6 +1,8 @@
 package net.wolfur.rasputin.task;
 
 import net.wolfur.rasputin.Main;
+import net.wolfur.rasputin.bungie.BungieUser;
+import net.wolfur.rasputin.bungie.clan.ClanUser;
 import net.wolfur.rasputin.util.Logger;
 import net.wolfur.rasputin.util.TimeUtil;
 
@@ -55,6 +57,13 @@ public class ReloadTask implements Runnable {
         Logger.warning("Some functions are restricted.", true);
 
         Main.getCoreManager().getRaidManager().resetRaidManager();
+        Main.getEmoteManager().reloadEmotes();
+        Main.getRoleManager().reloadRoles();
+        Main.getWeaponManager().reloadWeapons();
+
+        for(BungieUser bungieUser : Main.getCoreManager().getBungieUserManager().getBungieUsers().values()) {
+            if(bungieUser.isRegistered()) bungieUser.getClanUser().checkClanUser();
+        }
 
         Logger.info("Reloading completed.", true);
         Logger.info("All functions reactivated.", true);

@@ -88,11 +88,11 @@ public class Command_Spider implements Command {
 
                     StringBuilder fieldDescription = new StringBuilder();
 
-                    fieldDescription.append("**Owned:** " + this.formatInteger(ownQuantity) + " " + Utils.getEmote(Main.getFileManager().getEmoteDefinitionFile().getMaterial(String.valueOf(materialType == null ? currenciesType == null ? "-1" : currenciesType.getItemHash() : materialType.getItemHash()))).getAsMention());
+                    fieldDescription.append("**Owned:** " + this.formatInteger(ownQuantity) + " " + Main.getEmoteManager().getEmote(materialType == null ? currenciesType == null ? -1L : currenciesType.getItemHash() : materialType.getItemHash()).getAsMention());
                     fieldDescription.append("\n");
-                    fieldDescription.append("**Cost:** " + this.formatInteger(costItemQuantity) + " " + Utils.getEmote(Main.getFileManager().getEmoteDefinitionFile().getMaterial(String.valueOf(costItemHash))).getAsMention());
+                    fieldDescription.append("**Cost:** " + this.formatInteger(costItemQuantity) + " " + Main.getEmoteManager().getEmote(costItemHash).getAsMention());
                     fieldDescription.append("\n");
-                    fieldDescription.append("**Owned:** " + this.formatInteger(ownCostItemQuantity) + " " + Utils.getEmote(Main.getFileManager().getEmoteDefinitionFile().getMaterial(String.valueOf(costItemHash))).getAsMention());
+                    fieldDescription.append("**Owned:** " + this.formatInteger(ownCostItemQuantity) + " " + Main.getEmoteManager().getEmote(costItemHash).getAsMention());
 
                     embedBuilder.addField(this.formatInteger(quantity) + "x " + itemName, fieldDescription.toString(), true);
                 }

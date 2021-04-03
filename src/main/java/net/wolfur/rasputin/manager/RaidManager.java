@@ -58,7 +58,7 @@ public class RaidManager {
             ResultSet rs = Main.getSQLManager().executeQuery(st);
             while(rs.next()) {
                 if(rs.getBoolean("active")) {
-                    this.raidTypes.add(new RaidType(rs.getString("name"), rs.getString("better_name"), rs.getString("shortcuts"), rs.getInt("max_players"), rs.getString("icon_url"), rs.getString("activity_hash")));
+                    this.raidTypes.add(new RaidType(rs.getString("name"), rs.getString("better_name"), rs.getString("shortcuts"), rs.getInt("max_players"), rs.getString("icon_url"), rs.getString("activity_hash"), rs.getLong("channel_id")));
                 }
             }
         } catch (SQLException e) {

@@ -29,6 +29,7 @@ public class PermissionFile extends FileBase {
             cfg.addDefault("command." + commandName + ".whitelistedRoles", Arrays.asList(new Long[] { -1L }));
             cfg.addDefault("command." + commandName + ".whitelistedUsers", Arrays.asList(new Long[] { -1L }));
             cfg.addDefault("command." + commandName + ".blacklistedUsers", Arrays.asList(new Long[] { -1L }));
+            cfg.addDefault("command." + commandName + ".blacklistedRoles", Arrays.asList(new Long[] { -1L }));
         }
 
         cfg.options().copyDefaults(true);
@@ -43,8 +44,9 @@ public class PermissionFile extends FileBase {
             List<Long> whitelistedRoles = cfg.getLongList("command." + commandName + ".whitelistedRoles");
             List<Long> whitelistedUsers = cfg.getLongList("command." + commandName + ".whitelistedUsers");
             List<Long> blacklistedUsers = cfg.getLongList("command." + commandName + ".blacklistedUsers");
+            List<Long> blacklistedRoles = cfg.getLongList("command." + commandName + ".blacklistedRoles");
 
-            this.commandPermissions.add(new CommandPermission(CommandHandler.commands.get(commandName), commandName, needPermission, whitelistedRoles, whitelistedUsers, blacklistedUsers));
+            this.commandPermissions.add(new CommandPermission(CommandHandler.commands.get(commandName), commandName, needPermission, whitelistedRoles, whitelistedUsers, blacklistedUsers, blacklistedRoles));
         }
     }
 
@@ -64,6 +66,7 @@ public class PermissionFile extends FileBase {
         cfg.set("command." + commandPermission.getCommandName() + ".whitelistedRoles", commandPermission.getWhitelistedRoles());
         cfg.set("command." + commandPermission.getCommandName() + ".whitelistedUsers", commandPermission.getWhitelistedUsers());
         cfg.set("command." + commandPermission.getCommandName() + ".blacklistedUsers", commandPermission.getBlacklistedUsers());
+        cfg.set("command." + commandPermission.getCommandName() + ".blacklistedRoles", commandPermission.getBlacklistedRoles());
 
         saveConfig();
     }

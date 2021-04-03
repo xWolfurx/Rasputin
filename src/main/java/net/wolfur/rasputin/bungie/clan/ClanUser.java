@@ -3,12 +3,17 @@ package net.wolfur.rasputin.bungie.clan;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Role;
 import net.wolfur.rasputin.Main;
 import net.wolfur.rasputin.bungie.BungieUser;
 import net.wolfur.rasputin.bungie.clan.data.ClanData;
 import net.wolfur.rasputin.bungie.clan.data.ClanRewardState;
 import net.wolfur.rasputin.util.Logger;
+import net.wolfur.rasputin.util.TimeUtil;
+import net.wolfur.rasputin.util.Utils;
 
+import java.awt.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -26,6 +31,8 @@ public class ClanUser {
     public ClanUser(BungieUser bungieUser) {
         this.bungieUser = bungieUser;
         this.requestGroupV2();
+
+        this.checkClanUser();
     }
 
     public BungieUser getBungieUser() {
@@ -38,6 +45,43 @@ public class ClanUser {
 
     public ClanRewardState getClanRewardState() {
         return this.clanRewardState;
+    }
+
+    public void checkClanUser() {
+        Role veteranRole = Main.getRoleManager().getRole("veteran");
+        Role memberRole = Main.getRoleManager().getRole("member");
+
+        if(veteranRole == null) {
+            Logger.error("An error occurred while performing clan user check: Role 'Veteran' does not exists in database.", true);
+            return;
+        }
+
+        if(memberRole == null) {
+            Logger.error("An error occurred while performing clan user check: Role 'Member' does not exists in database.", true);
+            return;
+        }
+
+        if(this.getBungieUser().hasRole(veteranRole)) {
+            if(this.getBungieUser().hasRole(memberRole)) this.getBungieUser().removeRole(memberRole);
+            return;
+        }
+
+        long diff = this.getClanData().getJoinDate() + TimeUtil.parseTime("183d") - System.currentTimeMillis();
+        if(diff <= 0) {
+            if(this.getBungieUser().hasRole(memberRole)) this.getBungieUser().removeRole(memberRole);
+
+            this.getBungieUser().addRole(veteranRole);
+            this.getBungieUser().getUser().openPrivateChannel().queue(channel -> {
+                EmbedBuilder embedBuilder = new EmbedBuilder()
+                        .setColor(Color.GRAY)
+                        .setTitle("Neue Rolle erhalten!")
+                        .setDescription("Dir wurde die Rolle '" + veteranRole.getName() + "' zugewiesen, da du seit sechs Monaten im Clan bist." + "\n\n" +
+                                        "Herzlichen Glückwunsch!")
+                        .setThumbnail("http://vhost106.dein-gameserver.tech/rasputin-icon.png");
+
+                channel.sendMessage(embedBuilder.build()).queue(null, Utils.ignore);
+            });
+        }
     }
 
     public void requestGroupV2() {

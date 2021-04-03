@@ -51,11 +51,14 @@ public class BungieUser extends DatabaseUpdate {
     private JsonObject milestonesObject;
 
     private List<DestinyCharacter> destinyCharacters;
+    private List<Long> characters;
+
     private List<JsonObject> patrolHistory;
     private List<JsonObject> raidHistory;
     private List<JsonObject> trialsHistory;
 
     private List<JsonObject> historicalStats;
+    private List<JsonObject> stats;
 
     private Map<Long, AccountInformation> accounts;
     private Map<DestinyActivityModeType, List<JsonObject>> activityHistory;
@@ -87,11 +90,13 @@ public class BungieUser extends DatabaseUpdate {
         this.destinyMembershipType = MembershipType.ALL;
 
         this.destinyCharacters = new ArrayList<>();
+        this.characters = new ArrayList<>();
         this.patrolHistory = new ArrayList<>();
         this.raidHistory = new ArrayList<>();
         this.trialsHistory = new ArrayList<>();
 
         this.historicalStats = new ArrayList<>();
+        this.stats = new ArrayList<>();
 
         this.accounts = new HashMap<>();
         this.activityHistory = new HashMap<>();
@@ -115,6 +120,7 @@ public class BungieUser extends DatabaseUpdate {
                 BungieUser.this.startRefreshTimer();
                 BungieUser.this.requestDestinyProfile();
                 BungieUser.this.requestHistoricalStats();
+                BungieUser.this.requestCharacters();
                 //Todo: Fix out of memory -> BungieUser.this.initializeBungieUser();
             }
         });
@@ -677,6 +683,95 @@ public class BungieUser extends DatabaseUpdate {
         Logger.info("Collected " + this.historicalStats.size() + " historical statistics for " + this.getUser().getName() + " from Bungie.net.", false);
     }
 
+    private void requestCharacters() {
+        this.characters.clear();
+        try {
+            String url = "https://www.bungie.net/platform/destiny2/" + this.getDestinyMembershipType().getId() + "/account/" + this.getDestinyMembershipId() + "/stats/";
+
+            URL obj = new URL(url);
+            HttpURLConnection connection = (HttpURLConnection)obj.openConnection();
+
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("X-API-KEY", Main.getFileManager().getConfigFile().getAPIKey());
+            connection.setRequestProperty("Authorization", "Bearer " + this.getAccessToken());
+
+            int responseCode = connection.getResponseCode();
+            Logger.info("Sending 'GET' request to Bungie.net: " + url, false);
+            Logger.info("Response Code: " + responseCode, false);
+
+            if(responseCode != 200) {
+                Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
+                return;
+            }
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine;
+            StringBuilder response = new StringBuilder();
+
+            while ((inputLine = in.readLine()) != null) {
+                response.append(inputLine);
+            }
+
+            in.close();
+
+            JsonParser parser = new JsonParser();
+            JsonObject jsonObject = (JsonObject) parser.parse(response.toString());
+
+            JsonArray jsonArray = jsonObject.getAsJsonObject("Response").getAsJsonArray("characters");
+            for(int i = 0; i < jsonArray.size(); i++) {
+                long id = jsonArray.get(i).getAsJsonObject().get("characterId").getAsLong();
+                this.characters.add(id);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void requestStats() {
+        this.stats.clear();
+
+        int i = 1;
+        for(long characterId : this.characters) {
+            Logger.info("Collecting statistics for " + this.getUser().getName() + " (Character #" + i + "). ", false);
+            try {
+                String url = "https://www.bungie.net/platform/destiny2/" + this.getDestinyMembershipType().getId() + "/account/" + this.getDestinyMembershipId() + "/character/" + characterId + "/stats/";
+
+                URL obj = new URL(url);
+                HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("X-API-KEY", Main.getFileManager().getConfigFile().getAPIKey());
+                connection.setRequestProperty("Authorization", "Bearer " + this.getAccessToken());
+
+                int responseCode = connection.getResponseCode();
+
+                if(responseCode != 200) {
+                    Logger.requestRefused("A request to Bungie.net was refused. (Response-Code: " + responseCode + ")", responseCode, this.getUser());
+                    return;
+                }
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+
+                in.close();
+
+                JsonParser parser = new JsonParser();
+                JsonObject jsonObject = (JsonObject) parser.parse(response.toString());
+
+                this.stats.add(jsonObject);
+                i++;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void requestDestinyActivityHistory(DestinyActivityModeType destinyActivityModeType, int count, boolean loop) {
         List<JsonObject> activityHistoryData = new ArrayList<>();
         if(this.activityHistory.containsKey(destinyActivityModeType)) this.activityHistory.remove(destinyActivityModeType);
@@ -996,6 +1091,10 @@ public class BungieUser extends DatabaseUpdate {
         return this.milestonesObject;
     }
 
+    public List<JsonObject> getStats() {
+        return this.stats;
+    }
+
     public void startRefreshTimer() {
         long delay = this.getExpires() - System.currentTimeMillis();
         if(delay <= 0L) {
@@ -1142,21 +1241,15 @@ public class BungieUser extends DatabaseUpdate {
         });
     }
 
-    public boolean hasRole(Member member, long roleId) {
-        for(Role role : member.getRoles()) {
-            if(role.getIdLong() == roleId) {
-                return true;
-            }
-        }
-        return false;
+    public void addRole(Role role) {
+        Main.getGuild().addRoleToMember(this.getUser().getIdLong(), role).complete();
     }
 
-    public void addRole(long roleId) {
-        Main.getGuild().addRoleToMember(this.getUser().getIdLong(), Main.getGuild().getRoleById(roleId)).complete();
+    public void removeRole(Role role) {
+        Main.getGuild().removeRoleFromMember(this.getUser().getIdLong(), role).complete();
     }
 
-    public void removeRole(long roleId) {
-        Main.getGuild().removeRoleFromMember(this.getUser().getIdLong(), Main.getGuild().getRoleById(roleId)).complete();
+    public boolean hasRole(Role role) {
+        return Main.getGuild().getMember(this.getUser()).getRoles().contains(role);
     }
-
 }

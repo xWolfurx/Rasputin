@@ -1,6 +1,7 @@
 package net.wolfur.rasputin.command.notify;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Role;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.wolfur.rasputin.Main;
 import net.wolfur.rasputin.bungie.BungieUser;
@@ -23,11 +24,18 @@ public class Command_Notify implements Command {
         if(bungieUser.isRegistered()) {
             if (args.length == 1) {
                 if(args[0].equalsIgnoreCase("vendor")) {
-                    if(bungieUser.hasRole(event.getMember(), Main.getFileManager().getRoleDefinitionFile().getRoleId(RoleType.VENDOR_NOTIFY))) {
-                        bungieUser.removeRole(Main.getFileManager().getRoleDefinitionFile().getRoleId(RoleType.VENDOR_NOTIFY));
+                    Role vendorNotifyRole = Main.getRoleManager().getRole("vendor_notify");
+
+                    if(vendorNotifyRole == null) {
+                        event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Die Rolle 'Vendor Notify' konnte in der Datenbank nicht gefunden werden." + "\n\n" + "Bitte melde diesen Fehler bei Wolfur.").build()).complete();
+                        return;
+                    }
+
+                    if(bungieUser.hasRole(vendorNotifyRole)) {
+                        bungieUser.removeRole(vendorNotifyRole);
                         event.getTextChannel().sendMessage("Benachrichtigungen der Verkäufer für " + event.getAuthor().getAsMention() + " wurden deaktiviert.").complete();
                     } else {
-                        bungieUser.addRole(Main.getFileManager().getRoleDefinitionFile().getRoleId(RoleType.VENDOR_NOTIFY));
+                        bungieUser.addRole(vendorNotifyRole);
                         event.getTextChannel().sendMessage("Benachrichtigungen der Verkäufer für " + event.getAuthor().getAsMention() + " wurden aktiviert.").complete();
                     }
                 }

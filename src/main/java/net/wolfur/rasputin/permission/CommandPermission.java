@@ -19,14 +19,16 @@ public class CommandPermission {
     private List<Long> whitelistedUsers;
 
     private List<Long> blacklistedUsers;
+    private List<Long> blacklistedRoles;
 
-    public CommandPermission(Command command, String commandName, boolean needPermission, List<Long> whitelistedRoles, List<Long> whitelistedUsers, List<Long> blacklistedUsers) {
+    public CommandPermission(Command command, String commandName, boolean needPermission, List<Long> whitelistedRoles, List<Long> whitelistedUsers, List<Long> blacklistedUsers, List<Long> blacklistedRoles) {
         this.command = command;
         this.commandName = commandName;
         this.needPermission = needPermission;
         this.whitelistedRoles = whitelistedRoles;
         this.whitelistedUsers = whitelistedUsers;
         this.blacklistedUsers = blacklistedUsers;
+        this.blacklistedRoles = blacklistedRoles;
     }
 
     public Command getCommand() {
@@ -53,14 +55,22 @@ public class CommandPermission {
         return this.blacklistedUsers;
     }
 
+    public List<Long> getBlacklistedRoles() {
+        return this.blacklistedRoles;
+    }
+
     public boolean hasPermission(Member member) {
         if(this.getBlacklistedUsers().contains(member.getUser().getIdLong())) return false;
+
+        for(Role role : member.getRoles()) {
+            if(this.getBlacklistedRoles().contains(role.getIdLong())) return false;
+        }
+
         if(!this.needPermission()) return true;
         if(this.getWhitelistedUsers().contains(member.getUser().getIdLong())) return true;
+
         for(Role role : member.getRoles()) {
-            if(this.getWhitelistedRoles().contains(role.getIdLong())) {
-                return true;
-            }
+            if(this.getWhitelistedRoles().contains(role.getIdLong())) return true;
         }
         return false;
     }
@@ -98,6 +108,18 @@ public class CommandPermission {
     public void removeBlacklistedUser(long id) {
         if(!this.blacklistedUsers.contains(id)) return;
         this.blacklistedUsers.remove(id);
+        Main.getFileManager().getPermissionFile().saveCommand(this);
+    }
+
+    public void addBlacklistedRole(long id) {
+        if(this.blacklistedRoles.contains(id)) return;
+        this.blacklistedRoles.add(id);
+        Main.getFileManager().getPermissionFile().saveCommand(this);
+    }
+
+    public void removeBlacklistedRole(long id) {
+        if(!this.blacklistedRoles.contains(id)) return;
+        this.blacklistedRoles.remove(id);
         Main.getFileManager().getPermissionFile().saveCommand(this);
     }
 

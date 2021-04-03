@@ -86,6 +86,22 @@ public class Command_Permission implements Command {
                         commandPermission.removeBlacklistedUser(id);
                         event.getTextChannel().sendMessage("The user has been removed from the blacklist.").complete();
                         break;
+                    case "blockRole":
+                        if(commandPermission.getBlacklistedRoles().contains(id)) {
+                            event.getTextChannel().sendMessage("The role is already on the blacklist.").complete();
+                            break;
+                        }
+                        commandPermission.addBlacklistedRole(id);
+                        event.getTextChannel().sendMessage("The role has been added to the blacklist.").complete();
+                        break;
+                    case "unblockRole":
+                        if(!commandPermission.getBlacklistedRoles().contains(id)) {
+                            event.getTextChannel().sendMessage("The role is not on the blacklist.").complete();
+                            break;
+                        }
+                        commandPermission.removeBlacklistedRole(id);
+                        event.getTextChannel().sendMessage("The role has been removed from the blacklist.").complete();
+                        break;
                     case "needPermission":
                         boolean value = Boolean.parseBoolean(args[2]);
                         commandPermission.setNeedPermission(value);
@@ -99,7 +115,7 @@ public class Command_Permission implements Command {
             event.getTextChannel().sendMessage("The specified command does not exist").complete();
         }
         } else {
-            event.getTextChannel().sendMessage("Usage: .Permission <command> <addUser | removeUser | addRole | removeRole | blockUser | unblockUser | needPermission> <value>").complete();
+            event.getTextChannel().sendMessage("Usage: .Permission <command> <addUser | removeUser | addRole | removeRole | blockUser | unblockUser | blockRole | unblockRole | needPermission> <value>").complete();
         }
     }
 

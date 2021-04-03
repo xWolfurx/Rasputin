@@ -1,5 +1,6 @@
 package net.wolfur.rasputin.command.statistic;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
@@ -45,6 +46,8 @@ public class Command_Ranking implements Command {
                     event.getTextChannel().sendMessage(this.createCrucibleEmbedBuilder(bungieUser, "Infamy Points", "250859887", "1963785799").build()).complete();
                 } else if(args[0].equalsIgnoreCase("tower")) {
                     event.getTextChannel().sendMessage(this.createTowerEmbedBuilder(bungieUser).build()).complete();
+                } else if(args[0].equalsIgnoreCase("season")) {
+                    event.getTextChannel().sendMessage(this.createSeasonEmbedBuilder(bungieUser, "Season Level").build()).complete();
                 } else {
                     event.getTextChannel().sendMessage(new EmbedBuilder().setColor(Color.RED).setDescription("Dieser Typ existiert nicht. \n\nBitte verwende **.help ranking** um dir die möglichen Typen aufzulisten.").build()).queue(message -> {
                         message.delete().queueAfter(15, TimeUnit.SECONDS);
@@ -151,6 +154,55 @@ public class Command_Ranking implements Command {
             if(bungieUser.equals(targetUser)) {
                 lastLine = "\n" + "*...*" + "\n\n";
                 lastLine += "**" + i + ".** > " + bungieUser.getUser().getName() + ": **" + this.formatInteger((int) sortedHashMap.get(bungieUserObject)) + "** (" + resets + " Reset" + (resets == 1 ? "" : "s") + ")" + "\n";
+                end = true;
+            }
+
+            if(i > 5 && end) {
+                sb.append(lastLine);
+                break;
+            }
+
+            i++;
+        }
+
+        EmbedBuilder embedBuilder = new EmbedBuilder()
+                .setColor(Color.MAGENTA)
+                .setTitle("Ranking > " + name)
+                .setDescription(sb.toString());
+
+        return embedBuilder;
+    }
+
+    private EmbedBuilder createSeasonEmbedBuilder(BungieUser targetUser, String name) {
+        Map<BungieUser, Integer> tempHashMap = new HashMap<>();
+        StringBuilder sb = new StringBuilder();
+
+        for(BungieUser bungieUser : Main.getCoreManager().getBungieUserManager().getBungieUsers().values()) {
+            if(bungieUser.isRegistered()) {
+                JsonObject records = bungieUser.getProfile(ComponentType.RECORDS);
+
+                JsonArray array = records.getAsJsonObject("Response").getAsJsonObject("profileRecords").getAsJsonObject("data").getAsJsonObject("records").getAsJsonObject("1661195512").getAsJsonArray("intervalObjectives");
+                int value = array.get(0).getAsJsonObject().get("progress").getAsInt();
+
+                tempHashMap.put(bungieUser, value);
+            }
+        }
+
+        HashMap sortedHashMap = this.sortByValues(tempHashMap);
+        boolean end = false;
+
+        int i = 1;
+        for(Object bungieUserObject : sortedHashMap.keySet()) {
+            BungieUser bungieUser = (BungieUser)bungieUserObject;
+
+            if(i <= 5) {
+                sb.append("**" + i + ".** > " + bungieUser.getUser().getName() + ": **" + sortedHashMap.get(bungieUserObject) + "**" + "\n");
+            }
+
+            String lastLine = "";
+            if(bungieUser.equals(targetUser)) {
+                lastLine = "\n" + "*...*" + "\n\n";
+                lastLine += "**" + i + ".** > " + bungieUser.getUser().getName() + ": **" + sortedHashMap.get(bungieUserObject) + "**" + "\n";
                 end = true;
             }
 

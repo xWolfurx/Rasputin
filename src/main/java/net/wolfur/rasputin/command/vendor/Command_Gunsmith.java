@@ -90,12 +90,14 @@ public class Command_Gunsmith implements Command {
                     CurrenciesType costCurrenciesType = CurrenciesType.getFromItemHash(costItem.getItemHash());
                     int ownCostItemQuantity = costMaterialType == null ? costCurrenciesType == null ? -1 : targetUser.getCurrenciesQuantity(costCurrenciesType) : targetUser.getMaterialQuantity(costMaterialType);
 
+                    if(costItem.getItemHash() == 3159615086L) continue;
+
                     fieldDescription.append(this.formatInteger(costItem.getQuantity()) + " ");
-                    fieldDescription.append(Utils.getEmote(Main.getFileManager().getEmoteDefinitionFile().getMaterial(String.valueOf(costItem.getItemHash()))).getAsMention());
+                    fieldDescription.append(Main.getEmoteManager().getEmote(costItem.getItemHash()).getAsMention());
                     fieldDescription.append(" (" + this.formatInteger(ownCostItemQuantity) + " owned)");
                     fieldDescription.append("\n");
                 }
-                embedBuilder.addField(Utils.getEmote(Main.getFileManager().getEmoteDefinitionFile().getMaterial(String.valueOf(itemHash))).getAsMention() + " " + itemName, fieldDescription.toString(), true);
+                embedBuilder.addField(Main.getEmoteManager().getEmote(itemHash).getAsMention() + " " + itemName, fieldDescription.toString(), true);
             }
 
         }
